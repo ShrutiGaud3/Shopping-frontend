@@ -2,10 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Sparkles, MessageCircle } from 'lucide-react';
 import { homeSectionService } from '../../services/homeSectionService';
+import { adaptBackendProduct } from '../../services/productService';
 import { useShop } from '../../context/ShopContext';
 import { useSettings } from '../../context/SettingsContext';
 import { ProductCard } from '../product/ProductCard';
 import { StoryCircles } from './StoryCircles';
+import { TrendingNow } from './TrendingNow';
+import { NewArrivals } from './NewArrivals';
+import { DealsOfTheDay } from './DealsOfTheDay';
+import { CategoryGrid } from './CategoryGrid';
 import type { HomeSectionItem, Product } from '../../types';
 
 export const DynamicHomeSections: React.FC = () => {
@@ -33,7 +38,7 @@ export const DynamicHomeSections: React.FC = () => {
 
   const getFilteredProducts = (sec: HomeSectionItem): Product[] => {
     if (sec.products && sec.products.length > 0) {
-      return sec.products as Product[];
+      return (sec.products as any[]).map(adaptBackendProduct);
     }
     const filterBy = sec.config?.filterBy || 'trending';
     const limit = sec.config?.limit || 8;
@@ -58,7 +63,15 @@ export const DynamicHomeSections: React.FC = () => {
   };
 
   if (!sections || sections.length === 0) {
-    return null;
+    return (
+      <div className="space-y-12 md:space-y-16 py-4">
+        <StoryCircles />
+        <TrendingNow />
+        <CategoryGrid />
+        <NewArrivals />
+        <DealsOfTheDay />
+      </div>
+    );
   }
 
   return (
