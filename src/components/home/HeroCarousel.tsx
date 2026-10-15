@@ -1,0 +1,195 @@
+import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
+import { bannerService } from '../../services/bannerService';
+import type { BannerItem } from '../../types';
+
+export const HeroCarousel: React.FC = () => {
+  const [banners, setBanners] = useState<BannerItem[]>([]);
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchBanners = async () => {
+      try {
+        const res = await bannerService.getBanners();
+        if (isMounted && res.success && res.data && res.data.length > 0) {
+          setBanners(res.data);
+        }
+      } catch (err) {
+        console.warn('Failed to fetch hero banners:', err);
+      }
+    };
+    fetchBanners();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Fallback ethnic wear slides if DB empty
+  const defaultSlides: Partial<BannerItem>[] = [
+    {
+      id: 'default-1',
+      title: 'ROYAL SURAT SILK SAREES',
+      subtitle: 'Direct from master weavers in Surat. Pure Zari Banarasi & Kanjivaram masterpieces.',
+      badge: 'FESTIVE EDIT 2026',
+      desktopImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1920&q=80',
+      ctaText: 'Shop Sarees',
+      ctaLink: '/products?category=Sarees',
+      textColor: 'light',
+      alignment: 'left'
+    },
+    {
+      id: 'default-2',
+      title: 'BRIDAL & CELEBRATION LEHENGAS',
+      subtitle: 'Intricate handcrafted zardozi, sequins & velvet silhouettes for your special day.',
+      badge: 'WEDDING COUTURE',
+      desktopImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1920&q=80',
+      ctaText: 'Explore Lehengas',
+      ctaLink: '/products?category=Lehengas',
+      textColor: 'light',
+      alignment: 'left'
+    },
+    {
+      id: 'default-3',
+      title: 'READY-TO-WEAR SUITS & ANARKALIS',
+      subtitle: 'Breezy georgettes, flared anarkalis & festive shararas with designer dupatta.',
+      badge: 'NEW ARRIVALS',
+      desktopImage: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1920&q=80',
+      ctaText: 'Discover Suits',
+      ctaLink: '/products?category=Salwar%20Suits',
+      textColor: 'light',
+      alignment: 'center'
+    }
+  ];
+
+  const slides = (banners && banners.length > 0 ? banners : defaultSlides) as BannerItem[];
+
+  useEffect(() => {
+    if (slides.length <= 1 || isPaused) return;
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 5500);
+    return () => clearInterval(timer);
+  }, [slides.length, isPaused]);
+
+  const slide = slides[currentSlide] || slides[0];
+
+  const handlePrev = () => {
+    setCurrentSlide((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentSlide((prev) => (prev + 1) % slides.length);
+  };
+
+  return (
+    <section
+      aria-label="Hero Carousel"
+      className="relative w-full overflow-hidden bg-slate-950 text-white select-none group"
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+    >
+      {/* Slide Image with Parallax & Dark Overlay */}
+      <div className="relative w-full h-[480px] sm:h-[540px] md:h-[600px] lg:h-[640px] overflow-hidden">
+        <picture>
+          {slide.mobileImage && (
+            <source media="(max-width: 640px)" srcSet={slide.mobileImage} />
+          )}
+          <img
+            src={slide.desktopImage}
+            alt={slide.title}
+            className="w-full h-full object-cover object-center transition-all duration-1000 ease-out transform scale-100 group-hover:scale-102"
+          />
+        </picture>
+
+        {/* Dynamic Gradient Overlays for High Legibility */}
+        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30 md:bg-gradient-to-r md:from-black/85 md:via-black/50 md:to-transparent" />
+
+        {/* Content Container */}
+        <div className="absolute inset-0 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center">
+          <div
+            className={`max-w-2xl py-8 ${
+              slide.alignment === 'center'
+                ? 'mx-auto text-center'
+                : slide.alignment === 'right'
+                ? 'ml-auto text-right'
+                : 'text-left'
+            }`}
+          >
+            {/* Pill Badge */}
+            {slide.badge && (
+              <span className="inline-flex items-center gap-1.5 bg-rose-600/90 text-white text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3 backdrop-blur-xs border border-rose-500/50 shadow-md">
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                {slide.badge}
+              </span>
+            )}
+
+            {/* Main Headline */}
+            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-3 md:mb-4 leading-tight drop-shadow-lg">
+              {slide.title}
+            </h1>
+
+            {/* Subtitle */}
+            {slide.subtitle && (
+              <p className="text-xs sm:text-sm md:text-base text-slate-200/90 mb-6 leading-relaxed max-w-xl font-normal drop-shadow-md">
+                {slide.subtitle}
+              </p>
+            )}
+
+            {/* Action CTA Button */}
+            <div className="flex items-center gap-4 pt-1">
+              <Link
+                to={slide.ctaLink || '/products'}
+                className="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-900 font-bold px-6 sm:px-8 py-3 rounded-full text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95"
+              >
+                <span>{slide.ctaText || 'Shop Collection'}</span>
+                <ArrowRight className="w-4 h-4 text-rose-600" />
+              </Link>
+            </div>
+          </div>
+        </div>
+
+        {/* Navigation Arrows */}
+        {slides.length > 1 && (
+          <>
+            <button
+              onClick={handlePrev}
+              className="absolute left-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-black/70 hover:scale-110 transition-all cursor-pointer opacity-0 group-hover:opacity-100 duration-300"
+              aria-label="Previous Slide"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            <button
+              onClick={handleNext}
+              className="absolute right-4 top-1/2 -translate-y-1/2 z-20 w-11 h-11 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center text-white hover:bg-black/70 hover:scale-110 transition-all cursor-pointer opacity-0 group-hover:opacity-100 duration-300"
+              aria-label="Next Slide"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </>
+        )}
+
+        {/* Carousel Pagination Dots */}
+        {slides.length > 1 && (
+          <div className="absolute bottom-5 left-1/2 -translate-x-1/2 z-20 flex items-center gap-2">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setCurrentSlide(idx)}
+                className={`transition-all rounded-full cursor-pointer ${
+                  currentSlide === idx
+                    ? 'w-8 h-2 bg-rose-500 shadow-md shadow-rose-500/50'
+                    : 'w-2 h-2 bg-white/50 hover:bg-white/80'
+                }`}
+                aria-label={`Go to slide ${idx + 1}`}
+              />
+            ))}
+          </div>
+        )}
+
+      </div>
+    </section>
+  );
+};
