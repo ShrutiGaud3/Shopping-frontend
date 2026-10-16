@@ -93,16 +93,23 @@ export const HeroCarousel: React.FC = () => {
     >
       {/* Slide Image with Parallax & Dark Overlay */}
       <div className="relative w-full h-[480px] sm:h-[540px] md:h-[600px] lg:h-[640px] overflow-hidden">
-        <picture>
-          {slide.mobileImage && (
-            <source media="(max-width: 640px)" srcSet={slide.mobileImage} />
-          )}
+        {/* Mobile Device Banner Image (< 768px md) */}
+        {slide.mobileImage ? (
           <img
-            src={slide.desktopImage}
+            key={`mobile-${slide.id || slide._id || currentSlide}`}
+            src={slide.mobileImage}
             alt={slide.title}
-            className="w-full h-full object-cover object-center transition-all duration-1000 ease-out transform scale-100 group-hover:scale-102"
+            className="block md:hidden w-full h-full object-cover object-center transition-all duration-1000 ease-out transform scale-100 group-hover:scale-102"
           />
-        </picture>
+        ) : null}
+
+        {/* Desktop / Large Screen Banner Image (>= 768px md) */}
+        <img
+          key={`desktop-${slide.id || slide._id || currentSlide}`}
+          src={slide.desktopImage}
+          alt={slide.title}
+          className={`${slide.mobileImage ? 'hidden md:block' : 'block'} w-full h-full object-cover object-center transition-all duration-1000 ease-out transform scale-100 group-hover:scale-102`}
+        />
 
         {/* Dynamic Gradient Overlays for High Legibility */}
         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-black/30 md:bg-gradient-to-r md:from-black/85 md:via-black/50 md:to-transparent" />
@@ -120,32 +127,32 @@ export const HeroCarousel: React.FC = () => {
           >
             {/* Pill Badge */}
             {slide.badge && (
-              <span className="inline-flex items-center gap-1.5 bg-rose-600/90 text-white text-[10px] sm:text-xs font-bold px-3 py-1 rounded-full uppercase tracking-widest mb-3 backdrop-blur-xs border border-rose-500/50 shadow-md">
-                <Sparkles className="w-3 h-3 text-amber-300" />
+              <span className="inline-flex items-center gap-1.5 bg-white/15 backdrop-blur-md text-amber-200 text-[10px] sm:text-xs font-bold px-3.5 py-1 rounded-full uppercase tracking-[0.25em] mb-4 border border-white/20 shadow-md">
+                <Sparkles className="w-3.5 h-3.5 text-amber-300" />
                 {slide.badge}
               </span>
             )}
 
-            {/* Main Headline */}
-            <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-3 md:mb-4 leading-tight drop-shadow-lg">
+            {/* Main Headline (House of Indya Signature Luxury) */}
+            <h1 className="font-serif text-2xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-[0.08em] sm:tracking-[0.1em] text-white mb-3 md:mb-4 leading-tight drop-shadow-xl uppercase">
               {slide.title}
             </h1>
 
             {/* Subtitle */}
             {slide.subtitle && (
-              <p className="text-xs sm:text-sm md:text-base text-slate-200/90 mb-6 leading-relaxed max-w-xl font-normal drop-shadow-md">
+              <p className="text-xs sm:text-sm md:text-base text-slate-100 mb-7 leading-relaxed max-w-xl font-normal drop-shadow-md">
                 {slide.subtitle}
               </p>
             )}
 
-            {/* Action CTA Button */}
-            <div className="flex items-center gap-4 pt-1">
+            {/* Action CTA Button (Clean Sharp House of Indya Boxed Button) */}
+            <div className="flex items-center gap-3 pt-1">
               <Link
                 to={slide.ctaLink || '/products'}
-                className="inline-flex items-center gap-2 bg-white hover:bg-slate-100 text-slate-900 font-bold px-6 sm:px-8 py-3 rounded-full text-xs sm:text-sm tracking-wider uppercase transition-all duration-300 shadow-xl hover:shadow-2xl hover:scale-105 active:scale-95"
+                className="inline-flex items-center gap-2 bg-white hover:bg-slate-900 text-slate-900 hover:text-white font-bold px-7 sm:px-9 py-3.5 text-xs sm:text-sm tracking-[0.2em] uppercase transition-all duration-300 shadow-2xl hover:scale-105 rounded-xs"
               >
                 <span>{slide.ctaText || 'Shop Collection'}</span>
-                <ArrowRight className="w-4 h-4 text-rose-600" />
+                <ArrowRight className="w-4 h-4" />
               </Link>
             </div>
           </div>

@@ -12,7 +12,8 @@ import {
   X,
   ChevronDown,
   Sparkles,
-  ArrowRight
+  ArrowRight,
+  BookOpen
 } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { MobileMenu } from './MobileMenu';
@@ -109,40 +110,30 @@ export const Navbar: React.FC = () => {
         { id: 'straight', name: 'Straight Cut Suits', slug: 'straight-cut-suits', itemCount: 25, image: '' },
         { id: 'sharara', name: 'Sharara & Gharara', slug: 'sharara-gharara', itemCount: 22, image: '' }
       ]
-    },
-    {
-      id: 'kurtis',
-      name: 'Kurtis',
-      slug: 'kurtis',
-      children: [
-        { id: 'short-kurtis', name: 'Short Kurtis', slug: 'short-kurtis', itemCount: 28, image: '' },
-        { id: 'long-kurtis', name: 'Long Kurtis', slug: 'long-kurtis', itemCount: 35, image: '' },
-        { id: 'co-ords', name: 'Co-ord Sets', slug: 'co-ord-sets', itemCount: 20, image: '' }
-      ]
-    },
-    {
-      id: 'gowns',
-      name: 'Gowns',
-      slug: 'gowns',
-      children: [
-        { id: 'party-gowns', name: 'Party Wear Gowns', slug: 'party-wear-gowns', itemCount: 15, image: '' },
-        { id: 'indo-western', name: 'Indo-Western Gowns', slug: 'indo-western-gowns', itemCount: 12, image: '' }
-      ]
-    },
-    {
-      id: 'occasions',
-      name: 'Occasions',
-      slug: 'occasions',
-      children: [
-        { id: 'wedding-special', name: 'Wedding Collection', slug: 'wedding-collection', itemCount: 50, image: '' },
-        { id: 'festive-special', name: 'Festive Special', slug: 'festive-special', itemCount: 40, image: '' }
-      ]
     }
   ];
 
-  const displayCategories = (categoryTree && categoryTree.length > 0)
-    ? categoryTree
-    : (defaultCategories as Category[]);
+  const ALLOWED_ROOT_SLUGS = ['sarees', 'lehengas', 'salwar-suits'];
+  const ALLOWED_ROOT_NAMES = ['sarees', 'lehengas', 'salwar suits'];
+
+  const filteredRoots = (categoryTree && categoryTree.length > 0)
+    ? categoryTree.filter((cat) => {
+        const slug = (cat.slug || '').toLowerCase().trim();
+        const name = (cat.name || '').toLowerCase().trim();
+        return ALLOWED_ROOT_SLUGS.includes(slug) || ALLOWED_ROOT_NAMES.includes(name);
+      })
+    : [];
+
+  const displayCategories: Category[] = (filteredRoots.length > 0 ? filteredRoots : (defaultCategories as Category[])).map((root) => {
+    const fallback = (defaultCategories as Category[]).find(
+      (d) => d.slug === root.slug || d.name?.toLowerCase() === root.name?.toLowerCase()
+    );
+    const children = (root.children && root.children.length > 0) ? root.children : (fallback?.children || []);
+    return {
+      ...root,
+      children
+    } as Category;
+  });
 
   return (
     <>
@@ -164,10 +155,16 @@ export const Navbar: React.FC = () => {
 
               <Link
                 to="/"
-                className="font-serif text-xl sm:text-2xl md:text-3xl font-bold tracking-widest text-slate-900 transition-opacity hover:opacity-90 flex items-center gap-1.5"
+                className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
               >
-                <span>VELORA</span>
-                <span className="hidden sm:inline-block w-1.5 h-1.5 rounded-full bg-rose-600"></span>
+                <img
+                  src="/logo.png"
+                  alt="Weavera Logo"
+                  className="h-9 sm:h-12 w-auto object-contain rounded"
+                />
+                <span className="font-serif text-xl sm:text-2xl md:text-3xl font-bold tracking-widest text-slate-900">
+                  WEAVERA
+                </span>
               </Link>
             </div>
 
@@ -176,7 +173,7 @@ export const Navbar: React.FC = () => {
               <form onSubmit={handleSearchSubmit} className="relative">
                 <input
                   type="text"
-                  placeholder="Search sarees, lehengas, kurtis, suits..."
+                  placeholder="Search sarees, lehengas, salwar suits..."
                   value={searchQuery}
                   onFocus={() => setIsSearchFocused(true)}
                   onChange={(e) => setSearchQuery(e.target.value)}
@@ -383,8 +380,8 @@ export const Navbar: React.FC = () => {
         {/* Desktop Dynamic Mega Menu Navigation Strip */}
         <div className="hidden lg:block border-t border-slate-100 bg-white/95 backdrop-blur-xs">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <nav className="flex items-center justify-between gap-1 xl:gap-2">
-              <div className="flex items-center flex-wrap">
+            <nav className="flex items-center justify-between gap-4 py-0.5">
+              <div className="flex items-center space-x-1 sm:space-x-3 shrink-0">
                 {displayCategories.map((category) => {
                   const hasChildren = category.children && category.children.length > 0;
                   const isDropdownActive = activeDropdown === category.id;
@@ -398,7 +395,7 @@ export const Navbar: React.FC = () => {
                     >
                       <Link
                         to={`/products?category=${encodeURIComponent(category.name)}`}
-                        className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 rounded-md ${
+                        className={`inline-flex items-center gap-1 px-3 py-1.5 text-xs font-bold uppercase tracking-wider transition-all duration-200 rounded-md whitespace-nowrap ${
                           isDropdownActive
                             ? 'text-rose-700 bg-rose-50/80'
                             : 'text-slate-800 hover:text-rose-600 hover:bg-slate-50'
@@ -477,13 +474,20 @@ export const Navbar: React.FC = () => {
               </div>
 
               {/* Quick links on right side of navigation bar */}
-              <div className="flex items-center gap-4 text-xs font-semibold text-slate-700">
+              <div className="flex items-center gap-4 text-xs font-semibold text-slate-700 shrink-0 whitespace-nowrap">
                 <Link
                   to="/products?sort=discount"
                   className="inline-flex items-center gap-1 text-rose-600 hover:text-rose-700 uppercase tracking-wider py-1 px-2 rounded-md hover:bg-rose-50"
                 >
                   <Sparkles className="w-3 h-3 text-rose-500" />
                   <span>Steal Deals</span>
+                </Link>
+                <Link
+                  to="/blog"
+                  className="hover:text-black uppercase tracking-wider py-1 px-2 rounded-md hover:bg-slate-50 flex items-center gap-1"
+                >
+                  <BookOpen className="w-3.5 h-3.5 text-purple-600" />
+                  <span>Stories</span>
                 </Link>
                 <Link
                   to="/contact"

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Mail, Send, ChevronDown, MessageCircle, Phone, MapPin, Clock } from 'lucide-react';
+import { Mail, Send, ChevronDown, MessageCircle, Phone, MapPin, Clock, Loader2 } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { useSettings } from '../../context/SettingsContext';
+import API from '../../services/api';
 
 export const Footer: React.FC = () => {
   const [email, setEmail] = useState('');
+  const [subscribing, setSubscribing] = useState(false);
   const { showToast } = useShop();
   const { settings, openWhatsAppSupport } = useSettings();
 
@@ -16,121 +18,135 @@ export const Footer: React.FC = () => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      showToast('Thank you for subscribing to VELORA Ethnic Fashion! ✨');
-      setEmail('');
+    if (!email.trim()) return;
+
+    try {
+      setSubscribing(true);
+      const res = await API.post('/newsletter', { email: email.trim(), source: 'footer' });
+      if (res.data?.success) {
+        showToast(res.data.message || 'Thank you for subscribing to Weavera Festive Club! ✨');
+        setEmail('');
+      }
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || 'Failed to subscribe to newsletter. Please try again.';
+      showToast(errorMsg);
+    } finally {
+      setSubscribing(false);
     }
   };
 
   return (
-    <footer id="footer" className="bg-[#0A0E1A] text-white pt-12 md:pt-16 pb-12 border-t border-slate-800 w-full max-w-full overflow-hidden">
+    <footer id="footer" className="bg-[#FAF7F2] text-stone-800 pt-12 md:pt-16 pb-12 border-t border-[#EBE3D5] w-full max-w-full overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Brand & WhatsApp Quick Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12 border-b border-slate-800 pb-6 md:pb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12 border-b border-[#EBE3D5] pb-6 md:pb-8">
           <div>
-            <div className="flex items-center gap-2.5">
-              <span className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold tracking-widest text-white">
-                {settings.branding?.storeName || 'VELORA'}
+            <div className="flex items-center gap-3">
+              <img
+                src="/logo.png"
+                alt="Weavera Logo"
+                className="h-10 sm:h-12 w-auto object-contain rounded"
+              />
+              <span className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold tracking-widest text-stone-900">
+                WEAVERA
               </span>
-              <span className="w-2 h-2 rounded-full bg-rose-600"></span>
             </div>
-            <p className="text-xs text-slate-400 mt-1">
-              {settings.branding?.tagline || "India's Finest Ethnic & Festive Fashion Direct from Surat"}
+            <p className="text-xs text-stone-600 mt-1 font-medium">
+              Handcrafted Sarees, Bridal Lehengas &amp; Salwar Suits Direct from Surat
             </p>
           </div>
 
           <button
             onClick={() => openWhatsAppSupport()}
-            className="flex items-center gap-2 bg-emerald-600/20 text-emerald-400 border border-emerald-500/30 px-4 py-2 rounded-full text-xs font-semibold hover:bg-emerald-600 hover:text-white transition-colors cursor-pointer"
+            className="flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-300 px-4 py-2 rounded-full text-xs font-semibold hover:bg-emerald-100 transition-colors cursor-pointer shadow-xs"
           >
-            <MessageCircle className="w-4 h-4" />
+            <MessageCircle className="w-4 h-4 text-emerald-600" />
             <span>Chat on WhatsApp ({settings.whatsapp?.number || '+91 98765 43210'})</span>
           </button>
         </div>
 
         {/* Multi-Column Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 mb-12 md:mb-16 text-xs text-slate-400">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 mb-12 md:mb-16 text-xs text-stone-600">
           
           {/* Column 1: Ethnic Categories */}
-          <div className="border-b md:border-b-0 border-slate-800/80 pb-4 md:pb-0">
+          <div className="border-b md:border-b-0 border-[#EBE3D5] pb-4 md:pb-0">
             <button
               onClick={() => toggleSection('ethnic')}
-              className="w-full flex items-center justify-between font-bold text-sm text-white uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left"
+              className="w-full flex items-center justify-between font-bold text-sm text-stone-900 uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
             >
               <span>Ethnic Wear</span>
-              <ChevronDown className={`w-4 h-4 md:hidden text-slate-400 transition-transform duration-300 ${openSections['ethnic'] ? 'rotate-180 text-white' : ''}`} />
+              <ChevronDown className={`w-4 h-4 md:hidden text-stone-500 transition-transform duration-300 ${openSections['ethnic'] ? 'rotate-180 text-stone-900' : ''}`} />
             </button>
-            <ul className={`space-y-2.5 pt-1 md:pt-0 ${openSections['ethnic'] ? 'block' : 'hidden md:block'}`}>
-              <li><Link to="/products?category=Sarees" className="hover:text-rose-400 transition-colors">Silk &amp; Designer Sarees</Link></li>
-              <li><Link to="/products?category=Lehengas" className="hover:text-rose-400 transition-colors">Bridal &amp; Party Lehengas</Link></li>
-              <li><Link to="/products?category=Salwar%20Suits" className="hover:text-rose-400 transition-colors">Anarkali &amp; Sharara Suits</Link></li>
-              <li><Link to="/products?category=Kurtis" className="hover:text-rose-400 transition-colors">Kurtis &amp; Festive Tunics</Link></li>
-              <li><Link to="/products?category=Gowns" className="hover:text-rose-400 transition-colors">Indo-Western Gowns</Link></li>
+            <ul className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['ethnic'] ? 'block' : 'hidden md:block'}`}>
+              <li><Link to="/products?category=Sarees" className="hover:text-rose-700 transition-colors">Silk &amp; Designer Sarees</Link></li>
+              <li><Link to="/products?category=Lehengas" className="hover:text-rose-700 transition-colors">Bridal &amp; Celebration Lehengas</Link></li>
+              <li><Link to="/products?category=Salwar%20Suits" className="hover:text-rose-700 transition-colors">Festive &amp; Anarkali Salwar Suits</Link></li>
             </ul>
           </div>
 
           {/* Column 2: Customer Policies (Dynamic CMS Pages) */}
-          <div className="border-b md:border-b-0 border-slate-800/80 pb-4 md:pb-0">
+          <div className="border-b md:border-b-0 border-[#EBE3D5] pb-4 md:pb-0">
             <button
               onClick={() => toggleSection('policies')}
-              className="w-full flex items-center justify-between font-bold text-sm text-white uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left"
+              className="w-full flex items-center justify-between font-bold text-sm text-stone-900 uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
             >
               <span>Customer Care</span>
-              <ChevronDown className={`w-4 h-4 md:hidden text-slate-400 transition-transform duration-300 ${openSections['policies'] ? 'rotate-180 text-white' : ''}`} />
+              <ChevronDown className={`w-4 h-4 md:hidden text-stone-500 transition-transform duration-300 ${openSections['policies'] ? 'rotate-180 text-stone-900' : ''}`} />
             </button>
-            <ul className={`space-y-2.5 pt-1 md:pt-0 ${openSections['policies'] ? 'block' : 'hidden md:block'}`}>
-              <li><Link to="/pages/about-us" className="hover:text-rose-400 transition-colors">About Us</Link></li>
-              <li><Link to="/pages/shipping-policy" className="hover:text-rose-400 transition-colors">Shipping &amp; Delivery</Link></li>
-              <li><Link to="/pages/return-policy" className="hover:text-rose-400 transition-colors">Returns &amp; Exchange Policy</Link></li>
-              <li><Link to="/pages/terms-and-conditions" className="hover:text-rose-400 transition-colors">Terms of Service</Link></li>
-              <li><Link to="/pages/privacy-policy" className="hover:text-rose-400 transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/pages/faq" className="hover:text-rose-400 transition-colors">Frequently Asked Questions (FAQ)</Link></li>
+            <ul className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['policies'] ? 'block' : 'hidden md:block'}`}>
+              <li><Link to="/pages/about-us" className="hover:text-rose-700 transition-colors">About Us</Link></li>
+              <li><Link to="/pages/shipping-policy" className="hover:text-rose-700 transition-colors">Shipping &amp; Delivery</Link></li>
+              <li><Link to="/pages/return-policy" className="hover:text-rose-700 transition-colors">Returns &amp; Exchange Policy</Link></li>
+              <li><Link to="/pages/terms-and-conditions" className="hover:text-rose-700 transition-colors">Terms of Service</Link></li>
+              <li><Link to="/pages/privacy-policy" className="hover:text-rose-700 transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/pages/faq" className="hover:text-rose-700 transition-colors">Frequently Asked Questions (FAQ)</Link></li>
             </ul>
           </div>
 
           {/* Column 3: Quick Navigation & Account */}
-          <div className="border-b md:border-b-0 border-slate-800/80 pb-4 md:pb-0">
+          <div className="border-b md:border-b-0 border-[#EBE3D5] pb-4 md:pb-0">
             <button
               onClick={() => toggleSection('account')}
-              className="w-full flex items-center justify-between font-bold text-sm text-white uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left"
+              className="w-full flex items-center justify-between font-bold text-sm text-stone-900 uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
             >
               <span>My Account</span>
-              <ChevronDown className={`w-4 h-4 md:hidden text-slate-400 transition-transform duration-300 ${openSections['account'] ? 'rotate-180 text-white' : ''}`} />
+              <ChevronDown className={`w-4 h-4 md:hidden text-stone-500 transition-transform duration-300 ${openSections['account'] ? 'rotate-180 text-stone-900' : ''}`} />
             </button>
-            <ul className={`space-y-2.5 pt-1 md:pt-0 ${openSections['account'] ? 'block' : 'hidden md:block'}`}>
-              <li><Link to="/orders" className="hover:text-rose-400 transition-colors">Track My Order</Link></li>
-              <li><Link to="/cart" className="hover:text-rose-400 transition-colors">Shopping Bag</Link></li>
-              <li><Link to="/wishlist" className="hover:text-rose-400 transition-colors">Saved Wishlist</Link></li>
-              <li><Link to="/profile" className="hover:text-rose-400 transition-colors">My Profile</Link></li>
-              <li><Link to="/contact" className="hover:text-rose-400 transition-colors">Contact Support Desk</Link></li>
+            <ul className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['account'] ? 'block' : 'hidden md:block'}`}>
+              <li><Link to="/orders" className="hover:text-rose-700 transition-colors">Track My Order</Link></li>
+              <li><Link to="/cart" className="hover:text-rose-700 transition-colors">Shopping Bag</Link></li>
+              <li><Link to="/wishlist" className="hover:text-rose-700 transition-colors">Saved Wishlist</Link></li>
+              <li><Link to="/blog" className="hover:text-rose-700 transition-colors">Style Stories &amp; Guides</Link></li>
+              <li><Link to="/profile" className="hover:text-rose-700 transition-colors">My Profile</Link></li>
+              <li><Link to="/contact" className="hover:text-rose-700 transition-colors">Contact Support Desk</Link></li>
             </ul>
           </div>
 
           {/* Column 4: Store Support & Address */}
-          <div className="border-b md:border-b-0 border-slate-800/80 pb-4 md:pb-0">
-            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-3 md:mb-4">
+          <div className="border-b md:border-b-0 border-[#EBE3D5] pb-4 md:pb-0">
+            <h4 className="font-bold text-sm text-stone-900 uppercase tracking-wider mb-3 md:mb-4">
               Store Contact
             </h4>
             <div className="space-y-2.5">
               <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-rose-500 shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
                 <span>{settings.support?.address || 'Ring Road Textile Market, Surat, Gujarat - 395002'}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-emerald-500 shrink-0" />
+                <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
                 <span>{settings.support?.phone || '+91 98765 43210'}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-amber-500 shrink-0" />
-                <span>{settings.support?.email || 'support@velora.in'}</span>
+                <Mail className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>{settings.support?.email || 'support@weavera.in'}</span>
               </div>
-              <div className="flex items-start gap-2 pt-1 border-t border-slate-800/60">
-                <Clock className="w-4 h-4 text-sky-500 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 pt-1 border-t border-[#EBE3D5]">
+                <Clock className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-slate-300">{settings.workingHours?.days || 'Mon - Sat'}</span>
+                  <span className="block text-stone-800 font-semibold">{settings.workingHours?.days || 'Mon - Sat'}</span>
                   <span>{settings.workingHours?.timing || '10:00 AM - 8:00 PM IST'}</span>
                 </div>
               </div>
@@ -139,10 +155,10 @@ export const Footer: React.FC = () => {
 
           {/* Column 5: Stay In Touch (Newsletter) */}
           <div className="pt-2 md:pt-0 text-left">
-            <h4 className="font-bold text-sm text-white uppercase tracking-wider mb-3 md:mb-4">
+            <h4 className="font-bold text-sm text-stone-900 uppercase tracking-wider mb-3 md:mb-4">
               Festive Club
             </h4>
-            <p className="text-slate-400 mb-4 text-xs leading-relaxed">
+            <p className="text-stone-600 mb-4 text-xs leading-relaxed">
               Subscribe to get exclusive Surat manufacturer prices, festival drop previews &amp; VIP discount codes.
             </p>
             <form onSubmit={handleSubscribe} className="relative max-w-sm mb-4">
@@ -152,24 +168,29 @@ export const Footer: React.FC = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-slate-900 border border-slate-700 rounded-sm py-2.5 pl-3 pr-10 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-rose-500 transition-colors"
+                className="w-full bg-white border border-[#DDD5C7] rounded-sm py-2.5 pl-3 pr-10 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-800 transition-colors shadow-xs"
               />
               <button
                 type="submit"
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white p-1 cursor-pointer"
+                disabled={subscribing}
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 p-1 cursor-pointer disabled:opacity-50"
                 aria-label="Subscribe"
               >
-                <Send className="w-3.5 h-3.5" />
+                {subscribing ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-600" />
+                ) : (
+                  <Send className="w-3.5 h-3.5" />
+                )}
               </button>
             </form>
 
             {/* Social Icons */}
-            <div className="flex items-center gap-3 text-slate-400 pt-2">
+            <div className="flex items-center gap-3 text-stone-600 pt-2">
               <a
                 href={settings.branding?.socialLinks?.instagram || 'https://instagram.com'}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-rose-400 transition p-1.5 rounded-full hover:bg-slate-800"
+                className="hover:text-rose-600 transition p-1.5 rounded-full hover:bg-stone-200/60"
                 title="Instagram"
                 aria-label="Instagram"
               >
@@ -181,7 +202,7 @@ export const Footer: React.FC = () => {
                 href={settings.branding?.socialLinks?.facebook || 'https://facebook.com'}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-blue-400 transition p-1.5 rounded-full hover:bg-slate-800"
+                className="hover:text-blue-600 transition p-1.5 rounded-full hover:bg-stone-200/60"
                 title="Facebook"
                 aria-label="Facebook"
               >
@@ -193,7 +214,7 @@ export const Footer: React.FC = () => {
                 href={settings.branding?.socialLinks?.youtube || 'https://youtube.com'}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-red-500 transition p-1.5 rounded-full hover:bg-slate-800"
+                className="hover:text-red-600 transition p-1.5 rounded-full hover:bg-stone-200/60"
                 title="YouTube"
                 aria-label="YouTube"
               >
@@ -206,15 +227,15 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Footer Bottom Bar */}
-        <div className="pt-8 border-t border-slate-800 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500 text-center md:text-left">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 text-slate-400">
-            <Link to="/pages/terms-and-conditions" className="hover:text-white transition-colors">Terms &amp; Conditions</Link>
-            <Link to="/pages/privacy-policy" className="hover:text-white transition-colors">Privacy Policy</Link>
-            <Link to="/pages/shipping-policy" className="hover:text-white transition-colors">Shipping Policy</Link>
-            <Link to="/pages/faq" className="hover:text-white transition-colors">FAQs</Link>
+        <div className="pt-8 border-t border-[#EBE3D5] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-stone-500 text-center md:text-left">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 text-stone-600">
+            <Link to="/pages/terms-and-conditions" className="hover:text-stone-900 transition-colors">Terms &amp; Conditions</Link>
+            <Link to="/pages/privacy-policy" className="hover:text-stone-900 transition-colors">Privacy Policy</Link>
+            <Link to="/pages/shipping-policy" className="hover:text-stone-900 transition-colors">Shipping Policy</Link>
+            <Link to="/pages/faq" className="hover:text-stone-900 transition-colors">FAQs</Link>
           </div>
 
-          <p>{settings.branding?.footerText || '© 2026 VELORA Ethnic Fashion Inc. All rights reserved.'}</p>
+          <p>{settings.branding?.footerText || '© 2026 Weavera Ethnic Fashion Inc. All rights reserved.'}</p>
         </div>
 
       </div>

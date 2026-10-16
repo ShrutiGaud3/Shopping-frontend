@@ -15,7 +15,29 @@ export const Orders: React.FC = () => {
     setIsModalOpen(true);
   };
 
-  const getStatusBadge = (status: string) => {
+  const getStatusBadge = (status: string, exchangeStatus?: string) => {
+    if (exchangeStatus === 'requested') {
+      return (
+        <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-800 text-xs font-semibold px-2.5 py-1 rounded-xs border border-amber-300">
+          <Clock className="w-3.5 h-3.5" /> Exchange Pending
+        </span>
+      );
+    }
+    if (exchangeStatus === 'approved') {
+      return (
+        <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-800 text-xs font-semibold px-2.5 py-1 rounded-xs border border-emerald-300">
+          <CheckCircle2 className="w-3.5 h-3.5" /> Exchange Approved
+        </span>
+      );
+    }
+    if (exchangeStatus === 'rejected') {
+      return (
+        <span className="inline-flex items-center gap-1.5 bg-rose-50 text-rose-800 text-xs font-semibold px-2.5 py-1 rounded-xs border border-rose-300">
+          Exchange Rejected
+        </span>
+      );
+    }
+
     switch (status) {
       case 'Delivered':
         return (
@@ -24,13 +46,21 @@ export const Orders: React.FC = () => {
           </span>
         );
       case 'Shipped':
+      case 'Out for Delivery':
         return (
           <span className="inline-flex items-center gap-1.5 bg-blue-50 text-blue-700 text-xs font-semibold px-2.5 py-1 rounded-xs border border-blue-200">
-            <Truck className="w-3.5 h-3.5" /> Shipped
+            <Truck className="w-3.5 h-3.5" /> {status}
+          </span>
+        );
+      case 'Packed':
+        return (
+          <span className="inline-flex items-center gap-1.5 bg-indigo-50 text-indigo-700 text-xs font-semibold px-2.5 py-1 rounded-xs border border-indigo-200">
+            <Package className="w-3.5 h-3.5" /> Packed at Warehouse
           </span>
         );
       case 'Confirmed':
       case 'Pending':
+      case 'Placed':
         return (
           <span className="inline-flex items-center gap-1.5 bg-amber-50 text-amber-700 text-xs font-semibold px-2.5 py-1 rounded-xs border border-amber-200">
             <Clock className="w-3.5 h-3.5" /> Processing
@@ -44,6 +74,7 @@ export const Orders: React.FC = () => {
         );
     }
   };
+
 
   return (
     <div className="bg-gray-50/50 min-h-screen py-8 md:py-12">
@@ -86,14 +117,15 @@ export const Orders: React.FC = () => {
                       <strong className="text-gray-900 text-sm font-mono">#{orderId}</strong>
                     </div>
                     <div className="flex items-center gap-4">
-                      {getStatusBadge(orderStatus)}
+                      {getStatusBadge(orderStatus, order.exchangeStatus)}
                       <button
                         onClick={() => handleOpenDetails(order)}
                         className="text-blue-600 font-semibold hover:underline text-xs flex items-center gap-1 cursor-pointer"
                       >
-                        <Eye className="w-3.5 h-3.5" /> View Order Details &amp; Tracking
+                        <Eye className="w-3.5 h-3.5" /> View Tracking &amp; Exchange
                       </button>
                     </div>
+
                   </div>
 
                   {/* Items in Order */}

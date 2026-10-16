@@ -40,22 +40,43 @@ export const adaptBackendOrder = (item: any): Order => {
         },
         selectedSize: i.size || 'M',
         selectedColor: i.color || 'Default',
+        selectedStitchOption: i.stitchOption,
         quantity: i.quantity || 1
       };
     }),
     totalAmount: item.totalAmount || 0,
+    subtotal: item.subtotal || item.totalAmount || 0,
     discountAmount: item.discount || item.discountAmount || 0,
+    discount: item.discount || item.discountAmount || 0,
     shippingFee: item.shippingCharge || item.shippingFee || 0,
+    shippingCharge: item.shippingCharge || item.shippingFee || 0,
+    codCharge: item.codCharge || 0,
+    couponCode: item.couponCode || '',
+    coupon: item.couponCode || '',
     status: item.orderStatus || item.status || 'Confirmed',
     paymentMethod: item.paymentMethod || 'COD',
+    paymentStatus: item.paymentStatus || 'pending',
+    paymentId: item.paymentId || '',
     shippingAddress: {
       fullName: item.shippingAddress?.fullName || item.customerName || '',
       street: item.shippingAddress?.street || item.shippingAddress?.address || '',
+      address: item.shippingAddress?.address || item.shippingAddress?.street || '',
       city: item.shippingAddress?.city || '',
       state: item.shippingAddress?.state || '',
       pincode: item.shippingAddress?.pincode || '',
-      phone: item.shippingAddress?.phone || item.customerPhone || ''
-    }
+      phone: item.shippingAddress?.phone || item.customerPhone || '',
+      country: item.shippingAddress?.country || 'India'
+    },
+    trackingNumber: item.trackingNumber || '',
+    carrierName: item.carrierName || '',
+    trackingUrl: item.trackingUrl || '',
+    deliveredAt: item.deliveredAt ? new Date(item.deliveredAt).toISOString() : undefined,
+    exchangeStatus: item.exchangeStatus || 'none',
+    exchangeReason: item.exchangeReason || '',
+    exchangeNotes: item.exchangeNotes || '',
+    exchangeRequestedAt: item.exchangeRequestedAt ? new Date(item.exchangeRequestedAt).toISOString() : undefined,
+    exchangeResolvedAt: item.exchangeResolvedAt ? new Date(item.exchangeResolvedAt).toISOString() : undefined,
+    exchangeAdminNotes: item.exchangeAdminNotes || ''
   };
 };
 
@@ -70,6 +91,49 @@ export const orderService = {
       };
     }
     return { success: false, data: null };
+  },
+
+  // Online Payment Intent
+  createPaymentIntent: async (amount: number) => {
+    const response = await API.post('/orders/payment-intent', { amount });
+    return response.data;
+  },
+
+  // Verify Payment
+  verifyPayment: async (orderId: string, paymentId: string, razorpayOrderId?: string, signature?: string) => {
+    const response = await API.post('/orders/verify-payment', {
+      orderId,
+      paymentId,
+      razorpayOrderId,
+      signature
+    });
+    return response.data;
+  },
+
+  // Customer: Request Exchange within 10 days of delivery
+  requestExchange: async (orderId: string, reason: string, notes?: string) => {
+    const response = await API.post(`/orders/${orderId}/exchange`, { reason, notes });
+    if (response.data && response.data.data) {
+      return {
+        success: true,
+        message: response.data.message,
+        data: adaptBackendOrder(response.data.data)
+      };
+    }
+    return response.data;
+  },
+
+  // Admin: Review exchange request
+  updateExchangeStatusAdmin: async (orderId: string, exchangeStatus: 'approved' | 'rejected' | 'none', adminNotes?: string) => {
+    const response = await API.put(`/admin/orders/${orderId}/exchange`, { exchangeStatus, adminNotes });
+    if (response.data && response.data.data) {
+      return {
+        success: true,
+        message: response.data.message,
+        data: adaptBackendOrder(response.data.data)
+      };
+    }
+    return response.data;
   },
 
   // Get customer orders
@@ -108,9 +172,10 @@ export const orderService = {
     return { success: false, data: [] };
   },
 
-  // Admin: Update order status
-  updateOrderStatusAdmin: async (orderId: string, status: string) => {
-    const response = await API.put(`/admin/orders/${orderId}/status`, { status });
+  // Admin: Update order status, tracking number & carrier
+  updateOrderStatusAdmin: async (orderId: string, payload: { status?: string; trackingNumber?: string; carrierName?: string; trackingUrl?: string } | string) => {
+    const body = typeof payload === 'string' ? { status: payload } : payload;
+    const response = await API.put(`/admin/orders/${orderId}/status`, body);
     if (response.data && response.data.data) {
       return {
         success: true,

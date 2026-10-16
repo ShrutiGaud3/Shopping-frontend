@@ -10,10 +10,30 @@ interface ProductFilterSidebarProps {
   onCloseMobile?: () => void;
 }
 
-const CATEGORIES = ['Jackets', 'Dresses', 'Shirts', 'T-Shirts', 'Bottoms', 'Accessories'];
-const BRANDS = ['Velora Studio', 'Velora Atelier', 'Haute Velora', 'Velora Heritage', 'Velora Urban', 'Velora Kids', 'Velora Accessories'];
-const GENDERS = ['Women', 'Men', 'Kids', 'Unisex'];
-const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'One Size'];
+const CATEGORIES = [
+  'Sarees',
+  'Lehengas',
+  'Salwar Suits'
+];
+const BRANDS = ['Weavera', 'Weavera Heritage', 'Weavera Bridal', 'Weavera Silk'];
+const SIZES = ['XS', 'S', 'M', 'L', 'XL', 'One Size', 'Unstitched', 'Semi-Stitched'];
+const FABRICS = [
+  'Pure Kanjivaram Silk',
+  'Banarasi Silk',
+  'Georgette',
+  'Velvet',
+  'Organza',
+  'Chanderi Silk',
+  'Cotton Silk',
+  'Rayon'
+];
+const OCCASIONS = [
+  'Bridal & Wedding',
+  'Festive & Puja',
+  'Reception & Sangeet',
+  'Party & Evening',
+  'Casual & Daily'
+];
 const COLORS = [
   { name: 'Blue', hex: '#3B82F6' },
   { name: 'Red', hex: '#EF4444' },
@@ -34,7 +54,8 @@ export const ProductFilterSidebar: React.FC<ProductFilterSidebarProps> = ({
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     price: true,
     category: filterState.categories.length > 0,
-    gender: filterState.genders.length > 0,
+    fabric: (filterState.fabrics && filterState.fabrics.length > 0) || false,
+    occasion: (filterState.occasions && filterState.occasions.length > 0) || false,
     brand: filterState.brands.length > 0,
     color: filterState.colors.length > 0,
     discount: filterState.minDiscount > 0,
@@ -55,22 +76,34 @@ export const ProductFilterSidebar: React.FC<ProductFilterSidebarProps> = ({
     });
   };
 
+  const toggleFabric = (fabric: string) => {
+    setFilterState((prev) => {
+      const current = prev.fabrics || [];
+      const exists = current.includes(fabric);
+      return {
+        ...prev,
+        fabrics: exists ? current.filter((f) => f !== fabric) : [...current, fabric]
+      };
+    });
+  };
+
+  const toggleOccasion = (occasion: string) => {
+    setFilterState((prev) => {
+      const current = prev.occasions || [];
+      const exists = current.includes(occasion);
+      return {
+        ...prev,
+        occasions: exists ? current.filter((o) => o !== occasion) : [...current, occasion]
+      };
+    });
+  };
+
   const toggleBrand = (brand: string) => {
     setFilterState((prev) => {
       const exists = prev.brands.includes(brand);
       return {
         ...prev,
         brands: exists ? [] : [brand]
-      };
-    });
-  };
-
-  const toggleGender = (gender: string) => {
-    setFilterState((prev) => {
-      const exists = prev.genders.includes(gender);
-      return {
-        ...prev,
-        genders: exists ? prev.genders.filter((g) => g !== gender) : [...prev.genders, gender]
       };
     });
   };
@@ -190,6 +223,60 @@ export const ProductFilterSidebar: React.FC<ProductFilterSidebarProps> = ({
         )}
       </div>
 
+      {/* Fabric Filter Accordion (Surat Loom Specialization) */}
+      <div className="mb-4 pb-4 border-b border-gray-200">
+        <button
+          onClick={() => toggleSection('fabric')}
+          className="w-full flex items-center justify-between font-serif text-sm font-semibold text-gray-900 py-1 text-left"
+        >
+          <span>Fabric / Weave</span>
+          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${openSections['fabric'] ? 'rotate-180 text-gray-900' : ''}`} />
+        </button>
+
+        {openSections['fabric'] && (
+          <div className="mt-3 space-y-2 max-h-44 overflow-y-auto no-scrollbar pt-1">
+            {FABRICS.map((fabric) => (
+              <label key={fabric} className="flex items-center gap-2.5 cursor-pointer hover:text-black">
+                <input
+                  type="checkbox"
+                  checked={(filterState.fabrics || []).includes(fabric)}
+                  onChange={() => toggleFabric(fabric)}
+                  className="w-3.5 h-3.5 text-gray-900 border-gray-300 rounded-xs focus:ring-0"
+                />
+                <span className="text-xs text-gray-700">{fabric}</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Occasion Filter Accordion */}
+      <div className="mb-4 pb-4 border-b border-gray-200">
+        <button
+          onClick={() => toggleSection('occasion')}
+          className="w-full flex items-center justify-between font-serif text-sm font-semibold text-gray-900 py-1 text-left"
+        >
+          <span>Occasion</span>
+          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${openSections['occasion'] ? 'rotate-180 text-gray-900' : ''}`} />
+        </button>
+
+        {openSections['occasion'] && (
+          <div className="mt-3 space-y-2 max-h-44 overflow-y-auto no-scrollbar pt-1">
+            {OCCASIONS.map((occasion) => (
+              <label key={occasion} className="flex items-center gap-2.5 cursor-pointer hover:text-black">
+                <input
+                  type="checkbox"
+                  checked={(filterState.occasions || []).includes(occasion)}
+                  onChange={() => toggleOccasion(occasion)}
+                  className="w-3.5 h-3.5 text-gray-900 border-gray-300 rounded-xs focus:ring-0"
+                />
+                <span className="text-xs text-gray-700">{occasion}</span>
+              </label>
+            ))}
+          </div>
+        )}
+      </div>
+
       {/* 2. Brand Accordion (Matching Reference Image 4) */}
       <div className="mb-4 pb-4 border-b border-gray-200">
         <button
@@ -280,34 +367,7 @@ export const ProductFilterSidebar: React.FC<ProductFilterSidebarProps> = ({
         )}
       </div>
 
-      {/* 5. Gender / Section Accordion */}
-      <div className="mb-4 pb-4 border-b border-gray-200">
-        <button
-          onClick={() => toggleSection('gender')}
-          className="w-full flex items-center justify-between font-serif text-sm font-semibold text-gray-900 py-1 text-left"
-        >
-          <span>Gender / Section</span>
-          <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${openSections['gender'] ? 'rotate-180 text-gray-900' : ''}`} />
-        </button>
-
-        {openSections['gender'] && (
-          <div className="mt-3 space-y-2 pt-1">
-            {GENDERS.map((g) => (
-              <label key={g} className="flex items-center gap-2.5 cursor-pointer hover:text-black">
-                <input
-                  type="checkbox"
-                  checked={filterState.genders.includes(g)}
-                  onChange={() => toggleGender(g)}
-                  className="w-3.5 h-3.5 text-gray-900 border-gray-300 rounded-xs focus:ring-0"
-                />
-                <span className="text-xs text-gray-700">{g}</span>
-              </label>
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* 6. Size Accordion */}
+      {/* 5. Size Accordion */}
       <div className="mb-2">
         <button
           onClick={() => toggleSection('size')}

@@ -10,8 +10,8 @@ const DEFAULT_REVIEWS = [
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
     rating: 5,
     date: '12 February 2026',
-    comment: 'The quality of the Women’s Denim Jacket exceeded my expectations! The denim feels sturdy yet ultra-soft, and the stitching is perfection.',
-    productName: "Women's Denim Jacket"
+    comment: 'The Banarasi Katan Silk saree from Surat exceeded my expectations! The zari weave is genuine gold finish, and the drape is pure royal perfection.',
+    productName: "Pure Banarasi Katan Silk Saree"
   },
   {
     id: 'rev-2',
@@ -20,18 +20,18 @@ const DEFAULT_REVIEWS = [
     avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=200&q=80',
     rating: 5,
     date: '28 January 2026',
-    comment: 'I ordered the Crimson Evening Dress for a wedding cocktail. The drape and fit are breathtaking! Got so many compliments.',
-    productName: "Women's Evening Dress"
+    comment: 'I ordered the Crimson Velvet Bridal Lehenga for my wedding reception. The custom blouse stitching and heavy flare are breathtaking! Got so many compliments.',
+    productName: "Velvet Bridal Heritage Lehenga"
   },
   {
     id: 'rev-3',
     name: 'Kavya Patel',
-    location: 'Bengaluru, Karnataka',
+    location: 'Surat, Gujarat',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
     rating: 5,
     date: '04 February 2026',
-    comment: 'The suede trench coat has a rich camel finish and heavy inner lining. Ideal for winter travels.',
-    productName: "Men's Suede Trench Coat"
+    comment: 'Direct Surat manufacturing pricing with express delivery! The Georgette Anarkali suit fabric feels luxurious and came with immaculate finishing.',
+    productName: "Embroidered Georgette Anarkali Set"
   }
 ];
 
@@ -87,7 +87,7 @@ export const CustomerReviews: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8 gap-4">
           <div>
             <span className="text-xs uppercase tracking-[0.3em] font-semibold text-gray-400 block mb-2">
-              VOICES OF VELORA
+              VOICES OF WEAVERA
             </span>
             <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 tracking-tight">
               What Our Clients Say

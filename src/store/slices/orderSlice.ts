@@ -76,6 +76,25 @@ export const updateOrderStatusThunk = createAsyncThunk(
   }
 );
 
+export const requestExchangeThunk = createAsyncThunk(
+  'orders/requestExchange',
+  async (
+    { orderId, reason, notes }: { orderId: string; reason: string; notes?: string },
+    { rejectWithValue }
+  ) => {
+    try {
+      const res = await orderService.requestExchange(orderId, reason, notes);
+      if (res.success && res.data) {
+        return res.data;
+      }
+      return rejectWithValue(res.message || 'Failed to submit exchange request');
+    } catch (err: any) {
+      return rejectWithValue(err.response?.data?.message || err.message || 'Exchange request error');
+    }
+  }
+);
+
+
 const orderSlice = createSlice({
   name: 'orders',
   initialState,
@@ -144,9 +163,25 @@ const orderSlice = createSlice({
           target.status = updated.status || argStatus;
           if (updated.orderStatus) target.status = updated.orderStatus;
         }
+      })
+      // Request Exchange
+      .addCase(requestExchangeThunk.fulfilled, (state, action) => {
+        const updated = action.payload as any;
+        const target = state.orders.find(
+          (o: any) =>
+            o.id === updated.id ||
+            o._id === updated._id ||
+            o.orderId === updated.orderId
+        );
+        if (target) {
+          target.exchangeStatus = updated.exchangeStatus || 'requested';
+          target.exchangeReason = updated.exchangeReason;
+          target.exchangeNotes = updated.exchangeNotes;
+        }
       });
   }
 });
+
 
 export const { addOrderLocal, updateOrderStatusLocal } = orderSlice.actions;
 export default orderSlice.reducer;

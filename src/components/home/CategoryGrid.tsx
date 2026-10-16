@@ -8,10 +8,6 @@ export const CategoryGrid: React.FC = () => {
 
   const getCategoryLink = (cat: any) => {
     const catName = cat.name ? String(cat.name).trim() : '';
-    const slug = cat.slug ? String(cat.slug).toLowerCase().trim() : '';
-    if (['women', 'men', 'kids'].includes(catName.toLowerCase()) || ['women', 'men', 'kids'].includes(slug)) {
-      return `/products?gender=${encodeURIComponent(catName)}`;
-    }
     return `/products?category=${encodeURIComponent(catName)}`;
   };
 

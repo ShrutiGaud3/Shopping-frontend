@@ -5,6 +5,9 @@ export interface GetProductsParams {
   search?: string;
   category?: string;
   gender?: string;
+  fabric?: string;
+  occasion?: string;
+  work?: string;
   size?: string;
   color?: string;
   brand?: string;
@@ -26,27 +29,47 @@ export const adaptBackendProduct = (item: any): Product => {
 
   return {
     id: item._id || item.id,
+    _id: item._id || item.id,
     name: item.name,
     brand: item.brand || 'Velora Studio',
-    category: item.category || 'Jackets',
+    category: item.category || 'Sarees',
     gender: item.gender || 'Women',
     price: item.price,
     originalPrice: item.originalPrice || item.price,
     discountPercent:
       item.discountPercent ||
       (item.originalPrice ? Math.round(((item.originalPrice - item.price) / item.originalPrice) * 100) : 0),
-    rating: item.rating || 4.5,
-    reviewsCount: item.reviewsCount || 0,
+    rating: item.rating || 4.8,
+    reviewsCount: item.reviewsCount || 10,
     image: primaryImage,
     images: item.images && item.images.length > 0 ? item.images : [primaryImage],
     colors: item.colors || [{ name: 'Default', hex: '#111827' }],
-    sizes: item.sizes || ['S', 'M', 'L'],
+    sizes: item.sizes || ['Free Size'],
     isTrending: Boolean(item.isTrending),
     isDeal: Boolean(item.isDeal),
     isNew: Boolean(item.isNewArrival || item.isNew),
+    isFeatured: Boolean(item.isFeatured),
     description: item.description || '',
-    specifications: item.specifications || { fabric: 'Cotton Blend', care: 'Dry Clean Only' },
-    stock: Math.max(0, item.stock !== undefined ? Number(item.stock) : 25)
+    specifications: item.specifications || { fabric: item.fabric || 'Pure Silk', care: item.washCare || 'Dry Clean Only' },
+    stock: Math.max(0, item.stock !== undefined ? Number(item.stock) : 25),
+    sku: item.sku || '',
+    fabric: item.fabric || item.specifications?.fabric || 'Pure Silk',
+    work: item.work || item.specifications?.pattern || 'Zari Weaving',
+    occasion: item.occasion || item.specifications?.occasion || 'Festive & Wedding',
+    washCare: item.washCare || item.specifications?.care || 'Dry Clean Only',
+    setContents: item.setContents || '',
+    sareeLength: item.sareeLength || '',
+    lehengaFlare: item.lehengaFlare || '',
+    dispatchTime: item.dispatchTime || 'Ready to Dispatch in 24 Hours',
+    videoUrl: item.videoUrl || '',
+    stitchOptions: item.stitchOptions && item.stitchOptions.length > 0 ? item.stitchOptions : [
+      { type: 'Unstitched (Free)', price: 0, description: 'Standard fabric material provided' }
+    ],
+    deliveryInfo: item.deliveryInfo || {
+      estimatedDays: 4,
+      isCodAvailable: true,
+      freeShipping: true
+    }
   };
 };
 

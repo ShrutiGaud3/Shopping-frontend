@@ -1,12 +1,13 @@
 import API from './api';
 import { adaptBackendProduct } from './productService';
-import type { CartItem } from '../types';
+import type { CartItem, StitchOption } from '../types';
 
 export const adaptBackendCartItem = (item: any): CartItem => {
   return {
     product: item.product ? adaptBackendProduct(item.product) : item.product,
     selectedSize: item.size || 'M',
     selectedColor: item.color || 'Default',
+    selectedStitchOption: item.stitchOption || undefined,
     quantity: item.quantity || 1
   };
 };
@@ -26,12 +27,13 @@ export const cartService = {
   },
 
   // Add item to cart
-  addToCart: async (productId: string, quantity: number = 1, size: string = 'M', color: string = 'Default') => {
+  addToCart: async (productId: string, quantity: number = 1, size: string = 'M', color: string = 'Default', stitchOption?: StitchOption) => {
     const response = await API.post('/cart', {
       productId,
       quantity,
       size,
-      color
+      color,
+      stitchOption
     });
     if (response.data && response.data.data && response.data.data.items) {
       return {

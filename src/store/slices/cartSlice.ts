@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { cartService } from '../../services/cartService';
-import type { CartItem, Product } from '../../types';
+import type { CartItem, Product, StitchOption } from '../../types';
 
 interface CartState {
   items: CartItem[];
@@ -34,13 +34,13 @@ export const fetchCartThunk = createAsyncThunk(
 export const addToCartThunk = createAsyncThunk(
   'cart/addToCart',
   async (
-    { product, size, color, quantity = 1 }: { product: Product; size?: string; color?: string; quantity?: number },
+    { product, size, color, quantity = 1, stitchOption }: { product: Product; size?: string; color?: string; quantity?: number; stitchOption?: StitchOption },
     { rejectWithValue }
   ) => {
     try {
       const targetSize = size || product.sizes[0] || 'M';
       const targetColor = color || product.colors[0]?.name || 'Default';
-      const res = await cartService.addToCart(product.id, quantity, targetSize, targetColor);
+      const res = await cartService.addToCart(product.id, quantity, targetSize, targetColor, stitchOption);
       if (res.success && res.data) {
         return res.data;
       }
@@ -105,18 +105,20 @@ const cartSlice = createSlice({
   reducers: {
     addToCartLocal: (
       state,
-      action: PayloadAction<{ product: Product; size?: string; color?: string; quantity?: number }>
+      action: PayloadAction<{ product: Product; size?: string; color?: string; quantity?: number; stitchOption?: StitchOption }>
     ) => {
-      const { product, size, color, quantity = 1 } = action.payload;
+      const { product, size, color, quantity = 1, stitchOption } = action.payload;
       const targetSize = size || product.sizes[0] || 'M';
       const targetColor = color || product.colors[0]?.name || 'Default';
       const availableStock = product.stock !== undefined ? product.stock : 25;
+      const targetStitch = stitchOption?.type || '';
 
       const existingIndex = state.items.findIndex(
         (item) =>
           (item.product.id === product.id || (item.product as any)._id === product.id) &&
           item.selectedSize === targetSize &&
-          item.selectedColor === targetColor
+          item.selectedColor === targetColor &&
+          (item.selectedStitchOption?.type || '') === targetStitch
       );
 
       if (existingIndex > -1) {
@@ -127,6 +129,7 @@ const cartSlice = createSlice({
           product,
           selectedSize: targetSize,
           selectedColor: targetColor,
+          selectedStitchOption: stitchOption,
           quantity: Math.min(quantity, availableStock)
         });
       }

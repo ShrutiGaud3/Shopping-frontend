@@ -55,32 +55,32 @@ export const TrendingOffers: React.FC = () => {
           {/* Card 1: Left Model Image Card */}
           <div className="w-[280px] sm:w-[320px] md:w-auto shrink-0 h-[340px] sm:h-[360px] md:h-[380px] relative rounded-sm overflow-hidden group border border-gray-200 shadow-xs">
             <img
-              src="https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80"
-              alt="Men's Collection Offer"
+              src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80"
+              alt="Bridal Lehenga Offer"
               className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent flex flex-col justify-end p-6 text-white text-left">
-              <span className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-1 text-gray-300">
-                MEN'S COLLECTION
+              <span className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-1 text-rose-200">
+                BRIDAL HERITAGE
               </span>
               <h3 className="font-serif text-2xl font-bold mb-2">
                 Min 50% Off
               </h3>
               <Link
-                to="/products?gender=Men"
+                to="/products?category=Lehengas"
                 className="inline-block self-start border border-white text-white px-5 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-white hover:text-black transition-colors mt-2"
               >
-                Shop Now
+                Shop Lehengas
               </Link>
             </div>
           </div>
 
-          {/* Card 2: Center Split Banner (Matching Reference Image 1) */}
+          {/* Card 2: Center Split Banner */}
           <div className="w-[320px] sm:w-[420px] md:w-auto shrink-0 h-[340px] sm:h-[360px] md:h-[380px] grid grid-cols-2 bg-white border border-gray-200 rounded-sm overflow-hidden shadow-xs">
             {/* Left Content Box */}
             <div className="p-5 sm:p-6 flex flex-col items-center justify-center text-center bg-white border-r border-gray-100">
               <div className="bg-[#C41E3A] text-white text-[10px] font-bold tracking-widest uppercase px-3 py-1 mb-3 rounded-xs">
-                VELORA
+                WEAVERA
               </div>
               <h3 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 mb-2 leading-tight">
                 Min 60% off
@@ -89,33 +89,33 @@ export const TrendingOffers: React.FC = () => {
                 to="/products?discount=60"
                 className="mt-3 border border-gray-800 text-gray-900 px-5 py-2 text-xs font-semibold uppercase tracking-wider hover:bg-gray-900 hover:text-white transition-colors"
               >
-                Explore
+                Explore Deals
               </Link>
             </div>
 
             {/* Right Fashion Model Image */}
             <div className="h-full overflow-hidden bg-gray-100">
               <img
-                src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80"
-                alt="Trending Women Offer"
+                src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80"
+                alt="Pure Silk Sarees"
                 className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
               />
             </div>
           </div>
 
-          {/* Card 3: Right Editorial Card (Matching Reference Image 1) */}
+          {/* Card 3: Right Editorial Card */}
           <div className="w-[280px] sm:w-[320px] md:w-auto shrink-0 h-[340px] sm:h-[360px] md:h-[380px] rounded-sm overflow-hidden group border border-gray-200 bg-white flex flex-col items-center justify-center p-6 text-center shadow-xs">
             <span className="font-serif text-xl sm:text-2xl tracking-[0.25em] text-gray-900 uppercase block mb-3 font-bold">
-              FOREVER EDIT
+              WEAVERA SILK
             </span>
             <h3 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-              Min 50% Off
+              Min 40% Off
             </h3>
             <Link
-              to="/products?discount=50"
+              to="/products?category=Sarees"
               className="inline-block border border-gray-900 text-gray-900 px-6 py-2.5 text-xs font-semibold uppercase tracking-wider hover:bg-gray-900 hover:text-white transition-colors"
             >
-              Explore
+              Shop Sarees
             </Link>
           </div>
 

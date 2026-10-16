@@ -19,6 +19,8 @@ export const Products: React.FC = () => {
     const search = searchParams.get('search');
     const discount = searchParams.get('discount');
     const sort = searchParams.get('sort');
+    const fabric = searchParams.get('fabric');
+    const occasion = searchParams.get('occasion');
 
     setFilterState({
       categories: category ? [category] : [],
@@ -26,6 +28,8 @@ export const Products: React.FC = () => {
       brands: [],
       colors: [],
       sizes: [],
+      fabrics: fabric ? [fabric] : [],
+      occasions: occasion ? [occasion] : [],
       priceRange: [0, 10000],
       minDiscount: discount ? Number(discount) : 0,
       sortBy: sort ? (sort as any) : 'recommended',
@@ -97,6 +101,24 @@ export const Products: React.FC = () => {
       return false;
     }
 
+    // 9. Fabric Filter (Surat Specialization)
+    if (filterState.fabrics && filterState.fabrics.length > 0) {
+      const matchFabric = filterState.fabrics.some((f) => {
+        const prodFabric = (product.fabric || product.specifications?.fabric || '').toLowerCase();
+        return prodFabric.includes(f.toLowerCase());
+      });
+      if (!matchFabric) return false;
+    }
+
+    // 10. Occasion Filter (Surat Specialization)
+    if (filterState.occasions && filterState.occasions.length > 0) {
+      const matchOccasion = filterState.occasions.some((o) => {
+        const prodOccasion = (product.occasion || product.specifications?.occasion || '').toLowerCase();
+        return prodOccasion.includes(o.toLowerCase());
+      });
+      if (!matchOccasion) return false;
+    }
+
     return true;
   });
 
@@ -118,10 +140,10 @@ export const Products: React.FC = () => {
           <Link to="/" className="hover:text-black transition-colors">Home</Link>
           <span>/</span>
           <span className="text-gray-900 font-medium">Collections</span>
-          {filterState.genders.length > 0 && (
+          {filterState.categories.length > 0 && (
             <>
               <span>/</span>
-              <span className="text-gray-900 font-semibold">{filterState.genders.join(', ')}</span>
+              <span className="text-gray-900 font-semibold">{filterState.categories.join(', ')}</span>
             </>
           )}
         </nav>
@@ -130,7 +152,7 @@ export const Products: React.FC = () => {
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-6 border-b border-gray-200">
           <div>
             <h1 className="font-serif text-2xl md:text-3xl font-bold text-gray-900">
-              Fashion Collection
+              {filterState.categories.length === 1 ? filterState.categories[0] : 'Ethnic Collection'}
             </h1>
             <p className="text-xs text-gray-500 mt-1">
               Showing {sortedProducts.length} of {products.length} products

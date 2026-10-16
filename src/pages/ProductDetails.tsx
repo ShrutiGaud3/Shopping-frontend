@@ -1,39 +1,108 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
-import { Heart, ShoppingBag, Star, Tag, Check, Ruler, MessageCircle, Maximize2, X } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import {
+  Heart,
+  ShoppingBag,
+  Star,
+  Tag,
+  Check,
+  Ruler,
+  MessageCircle,
+  Maximize2,
+  X,
+  ShieldCheck,
+  Truck,
+  RefreshCw,
+  Scissors,
+  Sparkles,
+  MapPin,
+  Play,
+  Camera,
+  AlertCircle
+} from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { useSettings } from '../context/SettingsContext';
 import { ProductCard } from '../components/product/ProductCard';
 import { SizeChartModal } from '../components/product/SizeChartModal';
 import { productService } from '../services/productService';
+import { reviewService, type ReviewStats, type ReviewEligibility } from '../services/reviewService';
 import { getWhatsAppProductUrl, openWhatsApp } from '../utils/whatsapp';
-import type { Product } from '../types';
+import type { Product, StitchOption, Review } from '../types';
+import type { RootState } from '../store';
 
 export const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { products, addToCart, toggleWishlist, isInWishlist, reviews, fetchReviews, addReview } = useShop();
+  const { products, addToCart, toggleWishlist, isInWishlist } = useShop();
+  const { settings } = useSettings();
+  const { user } = useSelector((state: RootState) => state.auth);
 
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [selectedImage, setSelectedImage] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('M');
   const [selectedColor, setSelectedColor] = useState<string>('Default');
+  const [selectedStitchOption, setSelectedStitchOption] = useState<StitchOption | null>(null);
   const [activeTab, setActiveTab] = useState<'details' | 'specifications' | 'reviews'>('specifications');
   const [isSizeChartOpen, setIsSizeChartOpen] = useState<boolean>(false);
   const [isZoomOpen, setIsZoomOpen] = useState<boolean>(false);
+  const [isVideoModalOpen, setIsVideoModalOpen] = useState<boolean>(false);
 
-  // Review Form state
+  // Pincode Delivery State
+  const [pincode, setPincode] = useState<string>('');
+  const [pincodeStatus, setPincodeStatus] = useState<{ checked: boolean; valid: boolean; message: string; date?: string } | null>(null);
+
+  // Enhanced Review State
+  const [productReviews, setProductReviews] = useState<Review[]>([]);
+  const [reviewStats, setReviewStats] = useState<ReviewStats | null>(null);
+  const [eligibility, setEligibility] = useState<ReviewEligibility | null>(null);
   const [newRating, setNewRating] = useState<number>(5);
+  const [reviewTitle, setReviewTitle] = useState<string>('');
   const [newComment, setNewComment] = useState<string>('');
+  const [reviewImagesInput, setReviewImagesInput] = useState<string>('');
   const [submittingReview, setSubmittingReview] = useState<boolean>(false);
+  const [reviewSuccessMsg, setReviewSuccessMsg] = useState<string | null>(null);
+  const [photoModal, setPhotoModal] = useState<string | null>(null);
   const [imageFitMode, setImageFitMode] = useState<'cover' | 'contain'>('cover');
 
-  // Fetch product & reviews from backend API on mount or ID change
+  // Load reviews & stats from backend
+  const loadReviewsData = async (productId: string) => {
+    try {
+      const res = await reviewService.getProductReviews(productId);
+      if (res.success && res.data) {
+        setProductReviews(res.data);
+        if (res.stats) {
+          setReviewStats(res.stats);
+        }
+      }
+    } catch (err) {
+      console.error('Error fetching reviews:', err);
+    }
+  };
+
+  // Check user review eligibility (Verified buyer check)
+  const checkReviewEligibility = async (productId: string) => {
+    if (!user) {
+      setEligibility(null);
+      return;
+    }
+    try {
+      const res = await reviewService.checkEligibility(productId);
+      if (res.success && res.data) {
+        setEligibility(res.data);
+      }
+    } catch (err) {
+      // Ignored
+    }
+  };
+
   useEffect(() => {
     if (id) {
-      fetchReviews(id);
+      loadReviewsData(id);
+      checkReviewEligibility(id);
     }
-  }, [id]);
+  }, [id, user]);
 
   useEffect(() => {
     const fetchSingleProduct = async () => {
@@ -46,6 +115,11 @@ export const ProductDetails: React.FC = () => {
             setSelectedImage(res.data.image);
             setSelectedSize(res.data.sizes[0] || 'M');
             setSelectedColor(res.data.colors[0]?.name || 'Default');
+            if (res.data.stitchOptions && res.data.stitchOptions.length > 0) {
+              setSelectedStitchOption(res.data.stitchOptions[0]);
+            } else {
+              setSelectedStitchOption(null);
+            }
           } else {
             setProduct(null);
           }
@@ -87,25 +161,84 @@ export const ProductDetails: React.FC = () => {
   const similarProducts = products.filter((p) => p.id !== product.id && p.gender === product.gender).slice(0, 4);
   const alsoLikeProducts = products.filter((p) => p.id !== product.id && p.category === product.category).slice(0, 4);
 
+  const stitchAddon = selectedStitchOption?.price || 0;
+  const effectivePrice = product.price + stitchAddon;
+  const effectiveOriginalPrice = (product.originalPrice || product.price) + stitchAddon;
+
   const handleBuyNow = () => {
-    addToCart(product, selectedSize, selectedColor, 1);
+    addToCart(product, selectedSize, selectedColor, 1, selectedStitchOption || undefined);
     navigate('/cart');
+  };
+
+  const handleCheckPincode = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!/^\d{6}$/.test(pincode.trim())) {
+      setPincodeStatus({
+        checked: true,
+        valid: false,
+        message: 'Please enter a valid 6-digit Indian PIN code.'
+      });
+      return;
+    }
+    const days = product.deliveryInfo?.estimatedDays || 4;
+    const deliveryDate = new Date();
+    deliveryDate.setDate(deliveryDate.getDate() + days);
+    const dateStr = deliveryDate.toLocaleDateString('en-IN', {
+      weekday: 'short',
+      month: 'short',
+      day: 'numeric'
+    });
+    setPincodeStatus({
+      checked: true,
+      valid: true,
+      date: dateStr,
+      message: `Standard Express Delivery by ${dateStr}. Cash on Delivery (COD) available for PIN ${pincode.trim()}.`
+    });
   };
 
   const handleReviewSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newComment.trim() || !product) return;
     setSubmittingReview(true);
-    await addReview(product.id, newRating, newComment);
-    setNewComment('');
-    setSubmittingReview(false);
+    setReviewSuccessMsg(null);
+
+    const imagesArray = reviewImagesInput
+      .split(',')
+      .map(s => s.trim())
+      .filter(s => s.startsWith('http://') || s.startsWith('https://'));
+
+    try {
+      const res = await reviewService.createReview(product.id, {
+        rating: newRating,
+        title: reviewTitle.trim(),
+        comment: newComment.trim(),
+        images: imagesArray
+      });
+
+      if (res.success) {
+        setReviewSuccessMsg(res.message || 'Thank you! Your review has been submitted for moderation and will appear once approved.');
+        setReviewTitle('');
+        setNewComment('');
+        setReviewImagesInput('');
+        setNewRating(5);
+        if (id) {
+          loadReviewsData(id);
+          checkReviewEligibility(id);
+        }
+      } else {
+        alert(res.message || 'Could not submit review');
+      }
+    } catch (err: any) {
+      alert(err.response?.data?.message || err.message || 'Failed to submit review');
+    } finally {
+      setSubmittingReview(false);
+    }
   };
 
-  const currentReviews = reviews || [];
-  const dynamicCount = currentReviews.length;
-  const dynamicRating = currentReviews.length > 0
-    ? currentReviews.reduce((acc, r) => acc + r.rating, 0) / currentReviews.length
-    : 0;
+  const dynamicCount = reviewStats?.totalReviews ?? (productReviews.length || product.reviewsCount || 0);
+  const dynamicRating = reviewStats?.averageRating || (productReviews.length > 0
+    ? Math.round((productReviews.reduce((acc, r) => acc + r.rating, 0) / productReviews.length) * 10) / 10
+    : (product.rating || 4.8));
 
   return (
     <div className="bg-white min-h-screen py-4 sm:py-6 md:py-10">
@@ -185,6 +318,22 @@ export const ProductDetails: React.FC = () => {
                 </button>
               </div>
 
+              {/* Video Badge Overlay if videoUrl available */}
+              {product.videoUrl && (
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setIsVideoModalOpen(true);
+                  }}
+                  className="absolute bottom-3 left-3 z-20 bg-amber-500 hover:bg-amber-400 text-gray-950 font-bold px-3 py-1.5 rounded-full text-xs shadow-lg flex items-center gap-1.5 transition-transform hover:scale-105 cursor-pointer"
+                  title="Watch Loom Video"
+                >
+                  <Play className="w-3.5 h-3.5 fill-gray-950 text-gray-950" />
+                  <span>Real Loom Video</span>
+                </button>
+              )}
+
               {/* Hover Zoom Hint */}
               <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 bg-black/75 text-white text-[10px] font-medium px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none shadow-md whitespace-nowrap">
                 Click photo to view fullscreen 🔍
@@ -214,20 +363,30 @@ export const ProductDetails: React.FC = () => {
               </div>
 
               {/* Pricing Breakdown */}
-              <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3 mb-4">
+              <div className="flex flex-wrap items-baseline gap-2.5 sm:gap-3 mb-1.5">
                 <span className="text-xl sm:text-2xl font-bold text-gray-900">
-                  Rs. {product.price.toLocaleString()}
+                  Rs. {effectivePrice.toLocaleString()}
                 </span>
-                {product.originalPrice > product.price && (
+                {effectiveOriginalPrice > effectivePrice && (
                   <>
                     <span className="text-xs sm:text-sm text-gray-400 line-through">
-                      Rs. {product.originalPrice.toLocaleString()}
+                      Rs. {effectiveOriginalPrice.toLocaleString()}
                     </span>
                     <span className="badge-discount text-xs">
                       ({product.discountPercent}% off)
                     </span>
                   </>
                 )}
+                {selectedStitchOption && selectedStitchOption.price > 0 && (
+                  <span className="text-[10px] bg-amber-100 text-amber-900 border border-amber-300 font-semibold px-2 py-0.5 rounded-xs">
+                    Includes ₹{selectedStitchOption.price} Stitching
+                  </span>
+                )}
+              </div>
+              <div className="text-[11px] text-gray-500 mb-4 flex items-center gap-1.5">
+                <span className="text-emerald-700 font-semibold">Inclusive of all taxes</span>
+                <span>•</span>
+                <span>Direct Surat Loom Pricing</span>
               </div>
 
               {/* Product Overview / Description Box */}
@@ -296,6 +455,110 @@ export const ProductDetails: React.FC = () => {
                 </div>
               </div>
 
+              {/* Stitching / Customization Option (Surat Specialist) */}
+              {product.stitchOptions && product.stitchOptions.length > 0 && (
+                <div className="mb-6 bg-gradient-to-br from-amber-50/70 to-orange-50/40 p-4 rounded-sm border border-amber-200">
+                  <div className="flex items-center justify-between mb-2.5">
+                    <div className="flex items-center gap-1.5 text-xs font-bold text-gray-900 uppercase tracking-wider">
+                      <Scissors className="w-3.5 h-3.5 text-amber-700" />
+                      <span>Select Stitching / Customization</span>
+                    </div>
+                    <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-xs">
+                      Surat Master Tailoring
+                    </span>
+                  </div>
+                  <div className="space-y-2">
+                    {product.stitchOptions.map((opt, i) => {
+                      const isSelected = selectedStitchOption?.type === opt.type;
+                      return (
+                        <button
+                          type="button"
+                          key={i}
+                          onClick={() => setSelectedStitchOption(opt)}
+                          className={`w-full p-2.5 rounded-sm border text-left flex items-start justify-between transition-all cursor-pointer ${
+                            isSelected
+                              ? 'bg-white border-amber-600 ring-2 ring-amber-600/30 shadow-xs'
+                              : 'bg-white/80 border-gray-200 hover:border-amber-400'
+                          }`}
+                        >
+                          <div className="flex items-start gap-2.5 pr-2">
+                            <span className={`w-4 h-4 rounded-full border mt-0.5 flex items-center justify-center shrink-0 ${
+                              isSelected ? 'border-amber-700 bg-amber-700' : 'border-gray-300'
+                            }`}>
+                              {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
+                            </span>
+                            <div>
+                              <span className="text-xs font-bold text-gray-900 block leading-tight">{opt.type}</span>
+                              {opt.description && (
+                                <p className="text-[11px] text-gray-600 mt-0.5 font-normal">
+                                  {opt.description}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+                          <span className={`text-xs font-bold shrink-0 px-2 py-0.5 rounded-xs ${
+                            opt.price === 0
+                              ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                              : 'bg-amber-100 text-amber-900 border border-amber-300'
+                          }`}>
+                            {opt.price === 0 ? 'Free / Included' : `+₹${opt.price}`}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {/* Surat Direct Weaver Trust Strip */}
+              <div className="grid grid-cols-2 gap-2 mb-6 p-3 bg-slate-50 border border-slate-200 rounded-sm text-[11px] text-slate-700">
+                <div className="flex items-center gap-2">
+                  <span className="w-5 h-5 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 text-[10px] font-bold">🏭</span>
+                  <span><strong>Surat Loom Rate:</strong> Zero retail markups</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span><strong>100% Quality Checked:</strong> Fabric certified</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Truck className="w-4 h-4 text-blue-600 shrink-0" />
+                  <span><strong>Fast Dispatch:</strong> {product.dispatchTime || 'Within 24-48 Hours'}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="w-4 h-4 text-purple-600 shrink-0" />
+                  <span><strong>7-Day Returns:</strong> Easy pickup &amp; exchange</span>
+                </div>
+              </div>
+
+              {/* Pincode Delivery Estimator */}
+              <div className="mb-6 p-3.5 bg-gray-50/80 border border-gray-200 rounded-sm">
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                  <MapPin className="w-3.5 h-3.5 text-gray-600" /> Check Estimated Delivery Date
+                </label>
+                <form onSubmit={handleCheckPincode} className="flex gap-2">
+                  <input
+                    type="text"
+                    maxLength={6}
+                    value={pincode}
+                    onChange={(e) => setPincode(e.target.value.replace(/\D/g, ''))}
+                    placeholder="Enter 6-digit Pincode (e.g. 395002)"
+                    className="flex-1 bg-white border border-gray-300 rounded-sm px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-gray-900"
+                  />
+                  <button
+                    type="submit"
+                    className="px-4 py-2 bg-gray-900 text-white font-bold text-xs uppercase tracking-wider rounded-sm hover:bg-black transition-colors cursor-pointer"
+                  >
+                    Check
+                  </button>
+                </form>
+                {pincodeStatus && (
+                  <div className={`mt-2 text-xs flex items-center gap-1.5 ${pincodeStatus.valid ? 'text-emerald-700' : 'text-rose-600'}`}>
+                    {pincodeStatus.valid ? <Check className="w-3.5 h-3.5 shrink-0" /> : <X className="w-3.5 h-3.5 shrink-0" />}
+                    <span>{pincodeStatus.message}</span>
+                  </div>
+                )}
+              </div>
+
               {/* Best Offers Banner Box */}
               <div className="bg-blue-50/50 border border-blue-100 rounded-sm p-3.5 sm:p-4 mb-6 text-xs text-gray-800 space-y-1.5 sm:space-y-2">
                 <div className="font-bold text-gray-900 flex items-center gap-2 mb-1">
@@ -329,7 +592,7 @@ export const ProductDetails: React.FC = () => {
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                       <div className="flex items-center gap-2.5 sm:gap-3 flex-1">
                         <button
-                          onClick={() => addToCart(product, selectedSize, selectedColor, 1)}
+                          onClick={() => addToCart(product, selectedSize, selectedColor, 1, selectedStitchOption || undefined)}
                           className="flex-1 bg-gray-900 text-white font-bold text-xs sm:text-sm py-3.5 px-3 sm:px-4 uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-black transition-all shadow-md rounded-sm cursor-pointer whitespace-nowrap"
                         >
                           <ShoppingBag className="w-4 h-4 shrink-0" /> Add to Cart
@@ -354,7 +617,7 @@ export const ProductDetails: React.FC = () => {
 
                     {/* Row 2: WhatsApp Express Order */}
                     <button
-                      onClick={() => openWhatsApp(getWhatsAppProductUrl(product, selectedSize, selectedColor))}
+                      onClick={() => openWhatsApp(getWhatsAppProductUrl(product, selectedSize, selectedColor, settings.whatsapp?.number, selectedStitchOption))}
                       className="w-full bg-emerald-600 text-white font-bold text-xs sm:text-sm py-3.5 px-4 uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-emerald-700 transition-all shadow-md rounded-sm cursor-pointer whitespace-nowrap"
                     >
                       <MessageCircle className="w-4 h-4 fill-white text-emerald-600 shrink-0" /> Order Express via WhatsApp
@@ -411,7 +674,66 @@ export const ProductDetails: React.FC = () => {
               <h3 className="font-serif font-bold text-base sm:text-lg text-gray-900 mb-4">
                 Specifications
               </h3>
-              {product.category === 'Accessories' ? (
+              {(product.fabric || product.work || ['Sarees', 'Lehengas', 'Salwar Suits', 'Kurtis', 'Gowns'].includes(product.category)) ? (
+                <div className="bg-gradient-to-br from-amber-50/40 via-white to-orange-50/30 p-4 sm:p-6 rounded-sm border border-amber-200 shadow-xs">
+                  <div className="flex items-center justify-between pb-3 mb-4 border-b border-amber-200/80">
+                    <div className="flex items-center gap-2">
+                      <Sparkles className="w-4 h-4 text-amber-700" />
+                      <span className="font-serif font-bold text-sm text-gray-900">Surat Ethnic Craft Details</span>
+                    </div>
+                    <span className="text-[11px] font-semibold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-xs border border-amber-300">
+                      Authentic Surat Loom
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3.5 gap-x-6 text-xs text-gray-700">
+                    <div>
+                      <span className="text-gray-400 block font-medium">Fabric / Weave</span>
+                      <span className="font-semibold text-gray-900">{product.fabric || product.specifications?.fabric || 'Pure Surat Handloom Silk'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block font-medium">Work / Craftsmanship</span>
+                      <span className="font-semibold text-gray-900">{product.work || 'Intricate Zari & Resham Embroidery'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block font-medium">Occasion</span>
+                      <span className="font-semibold text-gray-900">{product.occasion || product.specifications?.occasion || 'Bridal, Wedding & Festive'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block font-medium">Set Contents</span>
+                      <span className="font-semibold text-gray-900">{product.setContents || 'Complete Set with Fabric & Details'}</span>
+                    </div>
+                    {product.sareeLength && (
+                      <div>
+                        <span className="text-gray-400 block font-medium">Saree Length</span>
+                        <span className="font-semibold text-gray-900">{product.sareeLength}</span>
+                      </div>
+                    )}
+                    {product.lehengaFlare && (
+                      <div>
+                        <span className="text-gray-400 block font-medium">Lehenga Flare / Gher</span>
+                        <span className="font-semibold text-gray-900">{product.lehengaFlare}</span>
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-gray-400 block font-medium">Wash &amp; Care</span>
+                      <span className="font-semibold text-gray-900">{product.washCare || 'Dry Clean Recommended'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block font-medium">Dispatch Timeline</span>
+                      <span className="font-semibold text-gray-900">{product.dispatchTime || 'Within 24-48 Hours'}</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block font-medium">Manufacturing Origin</span>
+                      <span className="font-semibold text-gray-900">Surat, Gujarat (Textile Capital of India)</span>
+                    </div>
+                    <div>
+                      <span className="text-gray-400 block font-medium">COD Availability</span>
+                      <span className="font-semibold text-emerald-700">Available across all serviceable pin codes</span>
+                    </div>
+                  </div>
+                </div>
+              ) : product.category === 'Accessories' ? (
                 (product.name.toLowerCase().includes('sunglasses') || product.name.toLowerCase().includes('glasses') || (product.specifications?.lensMaterial && !product.specifications?.bagStyle && !product.specifications?.beltWidth)) ? (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3.5 gap-x-6 text-xs text-gray-700 bg-purple-50/40 p-4 sm:p-6 rounded-sm border border-purple-100">
                     <div>
@@ -569,86 +891,265 @@ export const ProductDetails: React.FC = () => {
           )}
 
           {activeTab === 'reviews' && (
-            <div className="max-w-3xl space-y-8">
-              {/* Form to submit review */}
-              <div className="bg-gray-50 border border-gray-200 rounded-sm p-4 sm:p-6 text-left">
-                <h4 className="font-serif font-bold text-base text-gray-900 mb-1">
-                  Write a Customer Review
-                </h4>
-                <p className="text-xs text-gray-500 mb-4">
-                  Share your experience with fit, fabric, and overall quality.
-                </p>
+            <div className="max-w-4xl space-y-8 text-left">
+              {/* Overall Ratings & Score Summary Card */}
+              <div className="bg-gradient-to-br from-amber-50/50 via-white to-orange-50/30 p-5 sm:p-7 rounded-sm border border-amber-200/80 shadow-xs">
+                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+                  {/* Left Column: Big Score */}
+                  <div className="md:col-span-5 text-center md:text-left md:border-r border-amber-200/80 md:pr-6">
+                    <div className="flex items-baseline justify-center md:justify-start gap-2">
+                      <span className="font-serif text-4xl sm:text-5xl font-extrabold text-gray-950">
+                        {dynamicRating.toFixed(1)}
+                      </span>
+                      <span className="text-gray-400 text-base font-semibold">/ 5.0</span>
+                    </div>
 
-                <form onSubmit={handleReviewSubmit} className="space-y-4 text-xs">
-                  <div>
-                    <label className="block font-semibold text-gray-700 mb-1">Your Rating</label>
-                    <div className="flex items-center gap-1 cursor-pointer">
+                    <div className="flex items-center justify-center md:justify-start gap-1 my-2">
                       {Array.from({ length: 5 }).map((_, i) => (
-                        <button
+                        <Star
                           key={i}
-                          type="button"
-                          onClick={() => setNewRating(i + 1)}
-                          className="p-1 text-amber-400 cursor-pointer"
-                        >
-                          <Star
-                            className={`w-5 h-5 ${
-                              i < newRating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'
-                            }`}
-                          />
-                        </button>
+                          className={`w-4 h-4 sm:w-5 sm:h-5 ${
+                            i < Math.round(dynamicRating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300'
+                          }`}
+                        />
                       ))}
-                      <span className="ml-2 font-bold text-gray-700 text-xs">{newRating} / 5 Stars</span>
+                    </div>
+
+                    <p className="text-xs font-medium text-gray-600">
+                      Based on <strong className="text-gray-900">{dynamicCount} verified customer ratings</strong>
+                    </p>
+                    <div className="inline-flex items-center gap-1.5 mt-2 bg-emerald-50 text-emerald-800 text-[11px] font-semibold px-2.5 py-0.5 rounded-full border border-emerald-200">
+                      <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> 100% Verified Buyer Reviews
                     </div>
                   </div>
 
-                  <div>
-                    <label className="block font-semibold text-gray-700 mb-1">Review Comment</label>
-                    <textarea
-                      required
-                      rows={3}
-                      placeholder="What did you like or dislike about this product?"
-                      value={newComment}
-                      onChange={(e) => setNewComment(e.target.value)}
-                      className="w-full bg-white border border-gray-300 rounded-sm p-3 text-xs text-gray-900 focus:outline-none focus:border-gray-900"
-                    />
-                  </div>
+                  {/* Right Column: Rating Distribution Bars */}
+                  <div className="md:col-span-7 space-y-1.5 text-xs">
+                    {[5, 4, 3, 2, 1].map((starNum) => {
+                      const starCount = reviewStats?.distribution?.[starNum as keyof typeof reviewStats.distribution] ||
+                        productReviews.filter(r => Math.round(r.rating) === starNum).length;
+                      const percent = dynamicCount > 0 ? Math.round((starCount / dynamicCount) * 100) : (starNum === 5 ? 80 : starNum === 4 ? 20 : 0);
 
-                  <button
-                    type="submit"
-                    disabled={submittingReview}
-                    className="bg-gray-900 text-white font-semibold text-xs py-2.5 px-5 uppercase tracking-wider rounded-sm hover:bg-black transition-colors disabled:opacity-50 cursor-pointer shadow-sm"
-                  >
-                    {submittingReview ? 'Submitting...' : 'Submit Review'}
-                  </button>
-                </form>
+                      return (
+                        <div key={starNum} className="flex items-center gap-3">
+                          <span className="w-10 text-gray-700 font-semibold flex items-center justify-end gap-1">
+                            {starNum} <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                          </span>
+                          <div className="flex-1 h-2 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                              className="h-full bg-amber-400 rounded-full transition-all duration-500"
+                              style={{ width: `${percent}%` }}
+                            />
+                          </div>
+                          <span className="w-12 text-gray-500 text-[11px] text-right font-medium">
+                            {percent}%
+                          </span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
 
-              {/* Reviews List */}
-              <div>
-                <h3 className="font-serif font-bold text-base sm:text-lg text-gray-900 mb-4">
-                  Customer Reviews ({reviews.length})
-                </h3>
+              {/* Customer Photo Gallery Strip */}
+              {(reviewStats?.photoGallery?.length || productReviews.some(r => r.images && r.images.length > 0)) && (
+                <div className="bg-gray-50/70 p-4 sm:p-5 rounded-sm border border-gray-200">
+                  <h4 className="font-serif font-bold text-sm text-gray-900 mb-2.5 flex items-center gap-2">
+                    <Camera className="w-4 h-4 text-gray-700" />
+                    Customer Photo Gallery
+                  </h4>
+                  <div className="flex items-center gap-3 overflow-x-auto pb-2 no-scrollbar">
+                    {(reviewStats?.photoGallery || productReviews.flatMap(r => r.images || [])).slice(0, 10).map((imgUrl, i) => (
+                      <button
+                        key={i}
+                        type="button"
+                        onClick={() => setPhotoModal(imgUrl)}
+                        className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 rounded-sm overflow-hidden border border-gray-200 hover:border-gray-900 transition-all cursor-pointer group shadow-2xs"
+                      >
+                        <img src={imgUrl} alt={`Customer review photo ${i + 1}`} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        <div className="absolute inset-0 bg-black/25 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                          <Maximize2 className="w-4 h-4 text-white" />
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
-                {reviews.length === 0 ? (
-                  <p className="text-xs text-gray-500 italic py-4">
-                    No customer reviews yet. Be the first to share your thoughts on this product!
+              {/* Review Submission Section / Verification Notice */}
+              <div className="bg-white border border-gray-200 rounded-sm p-5 sm:p-6 shadow-2xs">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-gray-100 gap-2">
+                  <div>
+                    <h4 className="font-serif font-bold text-base text-gray-900">
+                      Write a Customer Review
+                    </h4>
+                    <p className="text-xs text-gray-500 mt-0.5">
+                      Help fellow ethnic wear enthusiasts with fit, weave texture, and zari details.
+                    </p>
+                  </div>
+                  <span className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 shrink-0 self-start sm:self-auto">
+                    Verified Purchases Only
+                  </span>
+                </div>
+
+                {reviewSuccessMsg && (
+                  <div className="bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs p-3.5 rounded-sm mb-4 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>{reviewSuccessMsg}</span>
+                  </div>
+                )}
+
+                {!user ? (
+                  <div className="bg-gray-50 border border-gray-200 rounded-sm p-4 text-center">
+                    <p className="text-xs text-gray-600 mb-3">
+                      Have you ordered this handcrafted outfit? Please sign in to submit a verified buyer review.
+                    </p>
+                    <Link
+                      to="/login"
+                      className="inline-block bg-gray-900 text-white font-semibold text-xs px-5 py-2.5 uppercase tracking-wider rounded-sm hover:bg-black transition-colors"
+                    >
+                      Sign In to Review
+                    </Link>
+                  </div>
+                ) : eligibility && !eligibility.isVerifiedBuyer ? (
+                  <div className="bg-amber-50/80 border border-amber-200 rounded-sm p-4 text-xs text-amber-800 flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                    <div>
+                      <strong className="block font-semibold">Verified Buyer Protected</strong>
+                      To maintain authentic boutique quality standards, only customers who have placed an order for this product can submit a review.
+                    </div>
+                  </div>
+                ) : eligibility && eligibility.hasReviewed ? (
+                  <div className="bg-emerald-50/80 border border-emerald-200 rounded-sm p-4 text-xs text-emerald-800 flex items-center gap-2">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>You have already submitted a review for this product. Thank you for your feedback!</span>
+                  </div>
+                ) : (
+                  <form onSubmit={handleReviewSubmit} className="space-y-4 text-xs">
+                    <div>
+                      <label className="block font-semibold text-gray-700 mb-1">
+                        Overall Rating <span className="text-rose-500">*</span>
+                      </label>
+                      <div className="flex items-center gap-1 cursor-pointer">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() => setNewRating(i + 1)}
+                            className="p-1 text-amber-400 cursor-pointer transition-transform hover:scale-110"
+                          >
+                            <Star
+                              className={`w-5 h-5 ${
+                                i < newRating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'
+                              }`}
+                            />
+                          </button>
+                        ))}
+                        <span className="ml-2 font-bold text-gray-800 text-xs">
+                          {newRating === 5 ? '5 Stars - Outstanding & Royal' :
+                           newRating === 4 ? '4 Stars - Very Good' :
+                           newRating === 3 ? '3 Stars - Average' :
+                           newRating === 2 ? '2 Stars - Below Expectations' : '1 Star - Poor'}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold text-gray-700 mb-1">
+                        Review Title (Optional)
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="e.g. Gorgeous zari border, perfect drape for wedding"
+                        value={reviewTitle}
+                        onChange={(e) => setReviewTitle(e.target.value)}
+                        className="w-full bg-white border border-gray-300 rounded-sm p-2.5 text-xs text-gray-900 focus:outline-none focus:border-gray-900"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold text-gray-700 mb-1">
+                        Detailed Review Experience <span className="text-rose-500">*</span>
+                      </label>
+                      <textarea
+                        required
+                        rows={3}
+                        placeholder="Describe the fabric feel, embroidery finishing, unstitched blouse allowance, or fit..."
+                        value={newComment}
+                        onChange={(e) => setNewComment(e.target.value)}
+                        className="w-full bg-white border border-gray-300 rounded-sm p-3 text-xs text-gray-900 focus:outline-none focus:border-gray-900 leading-relaxed"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block font-semibold text-gray-700 mb-1 flex items-center justify-between">
+                        <span>Photo Attachment URLs (Optional)</span>
+                        <span className="text-[10px] text-gray-400 font-normal">Separate multiple URLs with commas</span>
+                      </label>
+                      <input
+                        type="text"
+                        placeholder="https://images.unsplash.com/photo-..."
+                        value={reviewImagesInput}
+                        onChange={(e) => setReviewImagesInput(e.target.value)}
+                        className="w-full bg-white border border-gray-300 rounded-sm p-2.5 text-xs text-gray-900 focus:outline-none focus:border-gray-900"
+                      />
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={submittingReview}
+                      className="bg-gray-900 text-white font-semibold text-xs py-2.5 px-6 uppercase tracking-wider rounded-sm hover:bg-black transition-colors disabled:opacity-50 cursor-pointer shadow-xs flex items-center gap-2"
+                    >
+                      {submittingReview ? 'Submitting...' : 'Submit Verified Review'}
+                    </button>
+                  </form>
+                )}
+              </div>
+
+              {/* Customer Reviews List */}
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="font-serif font-bold text-base sm:text-lg text-gray-900">
+                    Customer Reviews ({productReviews.length})
+                  </h3>
+                  <span className="text-xs text-gray-500">
+                    Showing verified customer reviews
+                  </span>
+                </div>
+
+                {productReviews.length === 0 ? (
+                  <p className="text-xs text-gray-500 italic py-6 bg-gray-50 text-center rounded-sm border border-gray-100">
+                    No approved customer reviews yet. Be the first verified buyer to share your feedback!
                   </p>
                 ) : (
                   <div className="space-y-4 divide-y divide-gray-100">
-                    {reviews.map((rev) => (
-                      <div key={rev.id || rev._id} className="pt-4 first:pt-0 text-xs text-left">
-                        <div className="flex items-center justify-between mb-1">
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-gray-900">{rev.userName}</span>
-                            {rev.isVerifiedPurchase && (
-                              <span className="bg-emerald-50 text-emerald-700 text-[10px] font-semibold px-2 py-0.5 rounded-xs border border-emerald-200">
-                                Verified Purchase
-                              </span>
-                            )}
+                    {productReviews.map((rev) => (
+                      <div key={rev.id || rev._id} className="pt-5 first:pt-0 text-xs">
+                        {/* Reviewer Header */}
+                        <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">
+                          <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-amber-500 to-orange-500 text-white font-bold flex items-center justify-center text-xs shrink-0">
+                              {rev.userName ? rev.userName.charAt(0).toUpperCase() : 'C'}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-gray-900 text-xs sm:text-sm">{rev.userName}</span>
+                                {rev.isVerifiedBuyer && (
+                                  <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-semibold px-2 py-0.5 rounded-full border border-emerald-200">
+                                    <ShieldCheck className="w-3 h-3 text-emerald-600" /> Verified Buyer
+                                  </span>
+                                )}
+                              </div>
+                              {rev.userLocation && (
+                                <span className="text-[11px] text-gray-400 block">{rev.userLocation}</span>
+                              )}
+                            </div>
                           </div>
-                          <span className="text-gray-400">{rev.date}</span>
+                          <span className="text-gray-400 text-[11px]">{rev.date}</span>
                         </div>
-                        <div className="flex items-center gap-1 mb-2">
+
+                        {/* Rating Stars */}
+                        <div className="flex items-center gap-1 my-2">
                           {Array.from({ length: 5 }).map((_, r) => (
                             <Star
                               key={r}
@@ -657,13 +1158,50 @@ export const ProductDetails: React.FC = () => {
                               }`}
                             />
                           ))}
+                          <span className="ml-1.5 font-bold text-gray-800 text-[11px]">{rev.rating}.0</span>
                         </div>
-                        <p className="text-gray-700 leading-relaxed">{rev.comment}</p>
+
+                        {/* Title & Comment */}
+                        {rev.title && (
+                          <h5 className="font-bold text-gray-900 text-xs sm:text-sm mb-1">{rev.title}</h5>
+                        )}
+                        <p className="text-gray-700 leading-relaxed text-xs sm:text-sm">{rev.comment}</p>
+
+                        {/* Customer Photos in Review */}
+                        {rev.images && rev.images.length > 0 && (
+                          <div className="flex items-center gap-2 mt-3 overflow-x-auto pb-1">
+                            {rev.images.map((imgUrl, idx) => (
+                              <button
+                                key={idx}
+                                type="button"
+                                onClick={() => setPhotoModal(imgUrl)}
+                                className="w-16 h-16 rounded-sm overflow-hidden border border-gray-200 hover:border-gray-900 transition-all shrink-0 cursor-pointer"
+                              >
+                                <img src={imgUrl} alt="Review snapshot" className="w-full h-full object-cover" />
+                              </button>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     ))}
                   </div>
                 )}
               </div>
+
+              {/* Lightbox Photo Preview Modal */}
+              {photoModal && (
+                <div className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4">
+                  <div className="relative max-w-2xl max-h-[90vh] bg-white rounded-lg overflow-hidden shadow-2xl">
+                    <button
+                      onClick={() => setPhotoModal(null)}
+                      className="absolute top-3 right-3 p-2 bg-black/60 hover:bg-black text-white rounded-full transition-colors cursor-pointer"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                    <img src={photoModal} alt="Customer review visual" className="max-h-[85vh] w-auto object-contain mx-auto" />
+                  </div>
+                </div>
+              )}
             </div>
           )}
 
@@ -729,6 +1267,50 @@ export const ProductDetails: React.FC = () => {
                 alt={product.name}
                 className="max-w-full max-h-[88vh] object-contain rounded-xs shadow-2xl"
               />
+            </div>
+          </div>
+        )}
+
+        {/* Product Video Modal */}
+        {isVideoModalOpen && product.videoUrl && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in cursor-pointer"
+            onClick={() => setIsVideoModalOpen(false)}
+          >
+            <div
+              className="relative w-full max-w-2xl bg-neutral-900 border border-neutral-800 rounded-lg overflow-hidden shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center justify-between p-3.5 border-b border-neutral-800 bg-neutral-950">
+                <span className="text-xs font-bold text-white flex items-center gap-2">
+                  <Play className="w-4 h-4 text-amber-500 fill-amber-500" />
+                  <span>{product.name} — Real Loom &amp; Drape Showcase</span>
+                </span>
+                <button
+                  onClick={() => setIsVideoModalOpen(false)}
+                  className="text-neutral-400 hover:text-white p-1 rounded-md transition-colors cursor-pointer"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+              <div className="aspect-video w-full bg-black flex items-center justify-center">
+                {product.videoUrl.includes('youtube.com') || product.videoUrl.includes('youtu.be') ? (
+                  <iframe
+                    src={product.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'www.youtube.com/embed/')}
+                    title="Product Video"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <video
+                    src={product.videoUrl}
+                    controls
+                    autoPlay
+                    className="w-full h-full object-contain"
+                  />
+                )}
+              </div>
             </div>
           </div>
         )}

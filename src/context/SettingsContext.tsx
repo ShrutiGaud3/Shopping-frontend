@@ -20,12 +20,12 @@ const defaultSettings: Setting = {
   ],
   whatsapp: {
     number: '919876543210',
-    defaultMessage: 'Hello VELORA! 👋 I am interested in placing an order or inquiring about ethnic wear.',
+    defaultMessage: 'Hello Weavera! 👋 I am interested in placing an order or inquiring about ethnic wear.',
     enabled: true
   },
   support: {
     phone: '+91 98765 43210',
-    email: 'support@velora.in',
+    email: 'support@weavera.in',
     address: 'Ring Road Textile Market, Surat, Gujarat - 395002'
   },
   workingHours: {
@@ -42,9 +42,9 @@ const defaultSettings: Setting = {
     standardFee: 99
   },
   branding: {
-    storeName: 'VELORA',
-    tagline: "India's Finest Ethnic & Festive Fashion",
-    footerText: '© 2026 VELORA Ethnic Fashion Inc. Crafted with passion in Surat.',
+    storeName: 'Weavera',
+    tagline: "India's Finest Ethnic & Festive Fashion Direct from Surat",
+    footerText: '© 2026 Weavera Ethnic Fashion Inc. Crafted with passion in Surat.',
     socialLinks: {
       instagram: 'https://instagram.com',
       facebook: 'https://facebook.com',
@@ -53,7 +53,7 @@ const defaultSettings: Setting = {
     }
   },
   seo: {
-    metaTitle: 'VELORA | Authentic Ethnic Wear, Sarees, Lehengas & Kurtis',
+    metaTitle: 'Weavera | Authentic Ethnic Wear, Sarees, Lehengas & Salwar Suits',
     metaDescription: 'Shop exquisite Indian ethnic wear directly from Surat manufacturers.'
   }
 };

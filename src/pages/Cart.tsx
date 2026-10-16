@@ -19,7 +19,10 @@ export const Cart: React.FC = () => {
   const [couponCode, setCouponCode] = useState('');
   const [validating, setValidating] = useState(false);
 
-  const subtotal = cart.reduce((acc, item) => acc + item.product.originalPrice * item.quantity, 0);
+  const subtotal = cart.reduce(
+    (acc, item) => acc + (item.product.originalPrice + (item.selectedStitchOption?.price || 0)) * item.quantity,
+    0
+  );
   const totalSavings = cart.reduce(
     (acc, item) => acc + (item.product.originalPrice - item.product.price) * item.quantity,
     0
@@ -92,9 +95,14 @@ export const Cart: React.FC = () => {
                       {item.product.name}
                     </Link>
 
-                    <div className="flex items-center gap-4 text-xs text-gray-500 mt-1">
+                    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-gray-500 mt-1">
                       <span>Size: <strong className="text-gray-800">{item.selectedSize}</strong></span>
                       <span>Color: <strong className="text-gray-800">{item.selectedColor}</strong></span>
+                      {item.selectedStitchOption && (
+                        <span className="bg-amber-50 text-amber-900 border border-amber-200 px-1.5 py-0.5 rounded-xs text-[10px] font-semibold">
+                          🧵 {item.selectedStitchOption.type} {item.selectedStitchOption.price > 0 ? `(+₹${item.selectedStitchOption.price})` : '(Included)'}
+                        </span>
+                      )}
                     </div>
                   </div>
 
@@ -134,11 +142,11 @@ export const Cart: React.FC = () => {
 
                     <div className="flex items-center gap-2">
                       <span className="text-sm font-bold text-gray-900">
-                        ₹{(item.product.price * item.quantity).toLocaleString()}
+                        ₹{((item.product.price + (item.selectedStitchOption?.price || 0)) * item.quantity).toLocaleString()}
                       </span>
                       {item.product.originalPrice > item.product.price && (
                         <span className="text-xs text-gray-400 line-through">
-                          ₹{(item.product.originalPrice * item.quantity).toLocaleString()}
+                          ₹{((item.product.originalPrice + (item.selectedStitchOption?.price || 0)) * item.quantity).toLocaleString()}
                         </span>
                       )}
                     </div>

@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import type { RootState, AppDispatch } from '../store';
-import type { Product, Category, CartItem, Order, FilterState, User } from '../types';
+import type { Product, Category, CartItem, Order, FilterState, User, StitchOption, ShippingZone } from '../types';
 import {
   registerThunk,
   loginThunk,
@@ -47,9 +47,11 @@ import {
   fetchMyOrdersThunk,
   fetchAllOrdersAdminThunk,
   updateOrderStatusThunk,
+  requestExchangeThunk,
   addOrderLocal,
   updateOrderStatusLocal
 } from '../store/slices/orderSlice';
+import { shippingZoneService } from '../services/shippingZoneService';
 import {
   setSearchQuery as setSearchQueryAction,
   setFilterState as setFilterStateAction,
@@ -80,6 +82,8 @@ interface ShopContextType {
   reviews: Review[];
   appliedCoupon: { code: string; discount: number; message: string } | null;
   availableCoupons: CouponData[];
+  shippingZones: ShippingZone[];
+  fetchShippingZones: () => Promise<void>;
   searchQuery: string;
   toast: string | null;
   filterState: FilterState;
@@ -87,12 +91,12 @@ interface ShopContextType {
   register: (name: string, email: string, phone: string, password: string) => Promise<{ success: boolean; message?: string }>;
   logout: () => void;
   fetchProducts: () => Promise<void>;
-  addToCart: (product: Product, size?: string, color?: string, quantity?: number) => void;
+  addToCart: (product: Product, size?: string, color?: string, quantity?: number, stitchOption?: StitchOption) => void;
   removeFromCart: (productId: string, size: string, color: string) => void;
   updateCartQuantity: (productId: string, size: string, color: string, quantity: number) => void;
   toggleWishlist: (productId: string) => void;
   isInWishlist: (productId: string) => boolean;
-  validateCoupon: (code: string, cartTotal: number) => Promise<{ success: boolean; message?: string }>;
+  validateCoupon: (code: string, cartTotal: number, paymentMethod?: string) => Promise<{ success: boolean; message?: string }>;
   removeCoupon: () => void;
   fetchCoupons: () => Promise<void>;
   createCoupon: (couponData: Partial<CouponData>) => Promise<void>;
@@ -101,7 +105,12 @@ interface ShopContextType {
   setFilterState: React.Dispatch<React.SetStateAction<FilterState>>;
   resetFilters: () => void;
   showToast: (msg: string) => void;
-  placeOrder: (shippingAddress: Order['shippingAddress'], paymentMethod: Order['paymentMethod']) => Promise<Order>;
+  placeOrder: (
+    shippingAddress: Order['shippingAddress'],
+    paymentMethod: Order['paymentMethod'],
+    onlinePaymentDetails?: { paymentId?: string; razorpayOrderId?: string; signature?: string }
+  ) => Promise<Order>;
+  requestExchange: (orderId: string, reason: string, notes?: string) => Promise<{ success: boolean; message?: string }>;
   addProduct: (product: Omit<Product, 'id'>) => Promise<void>;
   updateProduct: (id: string, updated: Partial<Product>) => Promise<void>;
   deleteProduct: (id: string) => Promise<void>;
@@ -119,6 +128,7 @@ interface ShopContextType {
   deleteUserAdmin: (userId: string) => Promise<void>;
 }
 
+
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
 
 export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -132,13 +142,34 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const { productIds: wishlist } = useSelector((state: RootState) => state.wishlist);
   const { orders } = useSelector((state: RootState) => state.orders);
   const { searchQuery, filterState, toastMessage: toast } = useSelector((state: RootState) => state.ui);
+  const [shippingZones, setShippingZones] = useState<ShippingZone[]>([]);
 
-  // Auto load user session, categories, and promo coupons on mount
+  const fetchShippingZones = useCallback(async () => {
+    try {
+      const res = await shippingZoneService.getShippingZones();
+      if (res.success && res.data) {
+        setShippingZones(res.data);
+      }
+    } catch (err) {
+      console.error('Failed to load shipping zones', err);
+    }
+  }, []);
+
+  // Auto load user session, categories, promo coupons, and shipping zones on mount
   useEffect(() => {
     dispatch(getMeThunk());
     dispatch(fetchCategoriesThunk());
     dispatch(fetchCouponsThunk());
-  }, [dispatch]);
+    fetchShippingZones();
+  }, [dispatch, fetchShippingZones]);
+
+  useEffect(() => {
+    if (token) {
+      dispatch(fetchWishlistThunk());
+      dispatch(fetchCartThunk());
+    }
+  }, [dispatch, token]);
+
 
   // Load products whenever filters/search changes
   useEffect(() => {
@@ -153,10 +184,14 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (filterState.priceRange[0] > 0) params.minPrice = filterState.priceRange[0];
     if (filterState.priceRange[1] < 10000) params.maxPrice = filterState.priceRange[1];
 
+    if (filterState.fabrics && filterState.fabrics.length > 0) params.fabric = filterState.fabrics.join(',');
+    if (filterState.occasions && filterState.occasions.length > 0) params.occasion = filterState.occasions.join(',');
+
     if (filterState.sortBy === 'price-low') params.sort = 'priceLow';
     if (filterState.sortBy === 'price-high') params.sort = 'priceHigh';
     if (filterState.sortBy === 'newest') params.sort = 'newest';
     if (filterState.sortBy === 'discount') params.sort = 'discount';
+    params.limit = 100;
 
     dispatch(fetchProductsThunk(params));
   }, [dispatch, searchQuery, JSON.stringify(filterState)]);
@@ -214,7 +249,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [dispatch, user, token]);
 
   // Cart Functions via Redux Thunks + Fallback Local Dispatching
-  const addToCart = async (product: Product, size?: string, color?: string, quantity: number = 1) => {
+  const addToCart = async (product: Product, size?: string, color?: string, quantity: number = 1, stitchOption?: StitchOption) => {
     const stock = product.stock !== undefined ? product.stock : 25;
     if (stock === 0) {
       showToast(`Sorry, "${product.name}" is Out of Stock ❌`);
@@ -223,11 +258,13 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const targetSize = size || product.sizes[0] || 'M';
     const targetColor = color || product.colors[0]?.name || 'Default';
+    const targetStitch = stitchOption?.type || '';
 
     const existingItem = cart.find(
       (i) => (i.product.id === product.id || (i.product as any)._id === product.id) &&
              i.selectedSize === targetSize &&
-             i.selectedColor === targetColor
+             i.selectedColor === targetColor &&
+             (i.selectedStitchOption?.type || '') === targetStitch
     );
 
     const currentInCart = existingItem ? existingItem.quantity : 0;
@@ -240,9 +277,9 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const qtyToAdd = Math.min(quantity, stock - currentInCart);
 
     if (user && token) {
-      await dispatch(addToCartThunk({ product, size: targetSize, color: targetColor, quantity: qtyToAdd }));
+      await dispatch(addToCartThunk({ product, size: targetSize, color: targetColor, quantity: qtyToAdd, stitchOption }));
     } else {
-      dispatch(addToCartLocal({ product, size: targetSize, color: targetColor, quantity: qtyToAdd }));
+      dispatch(addToCartLocal({ product, size: targetSize, color: targetColor, quantity: qtyToAdd, stitchOption }));
     }
     showToast(`Added "${product.name}" to Bag! 🛍️`);
   };
@@ -314,9 +351,10 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Orders Functions via Redux Thunks + Fallback Local Dispatching
   const placeOrder = async (
     shippingAddress: Order['shippingAddress'],
-    paymentMethod: Order['paymentMethod']
+    paymentMethod: Order['paymentMethod'],
+    onlinePaymentDetails?: { paymentId?: string; razorpayOrderId?: string; signature?: string }
   ): Promise<Order> => {
-    const totalAmount = cart.reduce((acc, item) => acc + item.product.price * item.quantity, 0);
+    const totalAmount = cart.reduce((acc, item) => acc + (item.product.price + (item.selectedStitchOption?.price || 0)) * item.quantity, 0);
     const originalTotal = cart.reduce(
       (acc, item) => acc + item.product.originalPrice * item.quantity,
       0
@@ -324,25 +362,31 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const orderPayload = {
       items: cart.map((i) => ({
-        product: i.product.id,
-        id: i.product.id,
+        product: i.product.id || (i.product as any)._id,
+        id: i.product.id || (i.product as any)._id,
         name: i.product.name,
         price: i.product.price,
         quantity: i.quantity,
         size: i.selectedSize,
         color: i.selectedColor,
-        image: i.product.image
+        image: i.product.image || (i.product.images && i.product.images[0]),
+        stitchOption: i.selectedStitchOption
       })),
       shippingAddress: {
-        address: shippingAddress.street,
+        address: shippingAddress.street || shippingAddress.address,
+        street: shippingAddress.street || shippingAddress.address,
         city: shippingAddress.city,
-        state: shippingAddress.state || 'State',
+        state: shippingAddress.state || '',
         pincode: shippingAddress.pincode,
         phone: shippingAddress.phone,
-        fullName: shippingAddress.fullName
+        fullName: shippingAddress.fullName,
+        country: shippingAddress.country || 'India'
       },
       paymentMethod,
-      couponCode: appliedCoupon?.code || ''
+      couponCode: appliedCoupon?.code || '',
+      paymentId: onlinePaymentDetails?.paymentId || '',
+      razorpayOrderId: onlinePaymentDetails?.razorpayOrderId || '',
+      paymentSignature: onlinePaymentDetails?.signature || ''
     };
 
     let createdOrder: Order | null = null;
@@ -388,6 +432,24 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     return createdOrder;
   };
 
+  // Customer Request Exchange (10 days from delivery)
+  const requestExchange = async (orderId: string, reason: string, notes?: string) => {
+    try {
+      const res = await dispatch(requestExchangeThunk({ orderId, reason, notes }));
+      if (requestExchangeThunk.fulfilled.match(res)) {
+        showToast('Exchange request submitted successfully! 📦');
+        if (user) dispatch(fetchMyOrdersThunk());
+        return { success: true };
+      }
+      const errorMsg = (res.payload as string) || 'Failed to submit exchange request';
+      showToast(errorMsg);
+      return { success: false, message: errorMsg };
+    } catch (err: any) {
+      showToast(err.message || 'Exchange request error');
+      return { success: false, message: err.message };
+    }
+  };
+
   // Admin Product Actions via Redux Thunks
   const addProduct = async (newProd: Omit<Product, 'id'>) => {
     try {
@@ -431,8 +493,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const { appliedCoupon, availableCoupons } = useSelector((state: RootState) => state.coupons);
 
-  // Coupon Functions via Redux Thunks (Single use per user check)
-  const validateCoupon = async (code: string, cartTotal: number) => {
+  // Coupon Functions via Redux Thunks (Single use per user check + paymentMethod compatibility)
+  const validateCoupon = async (code: string, cartTotal: number, paymentMethod?: string) => {
     const upperCode = code.toUpperCase();
     
     // Check if user already used this coupon in local past orders
@@ -448,7 +510,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
       return { success: false, message: errorMsg };
     }
 
-    const res = await dispatch(validateCouponThunk({ code: upperCode, cartTotal, email: user?.email }));
+    const res = await dispatch(validateCouponThunk({ code: upperCode, cartTotal, email: user?.email, paymentMethod }));
     if (validateCouponThunk.fulfilled.match(res)) {
       showToast(res.payload.message || `Coupon '${upperCode}' applied! 🎉`);
       return { success: true };
@@ -457,6 +519,7 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     showToast(errorMsg);
     return { success: false, message: errorMsg };
   };
+
 
   const removeCoupon = () => {
     dispatch(removeCouponAction());
@@ -582,6 +645,8 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
         allReviews,
         appliedCoupon,
         availableCoupons,
+        shippingZones,
+        fetchShippingZones,
         searchQuery,
         toast,
         filterState,
@@ -604,7 +669,9 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
         resetFilters,
         showToast,
         placeOrder,
+        requestExchange,
         addProduct,
+
         updateProduct,
         deleteProduct,
         updateOrderStatus,

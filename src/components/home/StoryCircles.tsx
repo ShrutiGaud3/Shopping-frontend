@@ -5,17 +5,21 @@ import type { Category } from '../../types';
 
 export const StoryCircles: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let isMounted = true;
     const loadCategories = async () => {
       try {
+        setLoading(true);
         const res = await categoryService.getCategoryTree();
         if (isMounted && res.success && res.data && res.data.length > 0) {
           setCategories(res.data.filter((c) => c.showInMenu !== false));
         }
       } catch (err) {
         console.warn('Could not load categories for StoryCircles:', err);
+      } finally {
+        if (isMounted) setLoading(false);
       }
     };
     loadCategories();
@@ -39,23 +43,25 @@ export const StoryCircles: React.FC = () => {
       name: 'Salwar Suits',
       image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=400&q=80',
       slug: 'salwar-suits'
-    },
-    {
-      name: 'Kurtis',
-      image: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
-      slug: 'kurtis'
-    },
-    {
-      name: 'Gowns',
-      image: 'https://images.unsplash.com/photo-1566174053879-31528523f8ae?auto=format&fit=crop&w=400&q=80',
-      slug: 'gowns'
-    },
-    {
-      name: 'Occasions',
-      image: 'https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&w=400&q=80',
-      slug: 'occasions'
     }
   ];
+
+  if (loading) {
+    return (
+      <section className="bg-white py-6 border-b border-slate-100 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-5 sm:gap-8 overflow-x-auto pb-2 scrollbar-none justify-start md:justify-center animate-pulse">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <div key={i} className="flex flex-col items-center gap-2 shrink-0">
+                <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-slate-200" />
+                <div className="h-3 w-14 bg-slate-200 rounded" />
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   const items = categories.length > 0 ? categories : (defaultStories as any[]);
 

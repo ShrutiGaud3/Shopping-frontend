@@ -4,23 +4,30 @@ export interface CouponData {
   _id?: string;
   id?: string;
   code: string;
-  discountType: 'percentage' | 'fixed';
-  discountValue: number;
-  minimumOrderValue: number;
-  maximumDiscount: number;
+  type?: 'percent' | 'flat';
+  discountType?: 'percentage' | 'fixed' | 'percent' | 'flat';
+  value?: number;
+  discountValue?: number;
+  minOrder?: number;
+  minimumOrderValue?: number;
+  maxDiscount?: number;
+  maximumDiscount?: number;
+  expiry?: string;
   expiryDate?: string;
   usageLimit?: number;
   usedCount?: number;
+  paymentMethod?: 'any' | 'prepaid' | 'cod';
   isActive?: boolean;
 }
 
 export const couponService = {
-  // Validate coupon code against cart total & user email
-  validateCoupon: async (code: string, cartTotal: number, email?: string) => {
+  // Validate coupon code against cart total, paymentMethod & user email
+  validateCoupon: async (code: string, cartTotal: number, email?: string, paymentMethod?: string) => {
     const response = await API.post('/coupons/validate', {
       code,
       cartTotal,
-      email
+      email,
+      paymentMethod
     });
     return response.data;
   },
@@ -40,6 +47,12 @@ export const couponService = {
   // Admin: Create new coupon
   createCoupon: async (couponData: Partial<CouponData>) => {
     const response = await API.post('/coupons', couponData);
+    return response.data;
+  },
+
+  // Admin: Update coupon
+  updateCoupon: async (id: string, couponData: Partial<CouponData>) => {
+    const response = await API.put(`/coupons/${id}`, couponData);
     return response.data;
   },
 

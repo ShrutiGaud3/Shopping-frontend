@@ -24,8 +24,16 @@ export interface ProductSpecification {
   beltWidth?: string;
 }
 
+export interface StitchOption {
+  _id?: string;
+  type: string;
+  price: number;
+  description?: string;
+}
+
 export interface Product {
   id: string;
+  _id?: string;
   name: string;
   brand: string;
   category: string;
@@ -42,16 +50,36 @@ export interface Product {
   isTrending?: boolean;
   isDeal?: boolean;
   isNew?: boolean;
+  isFeatured?: boolean;
   description: string;
   specifications: ProductSpecification;
   dealTag?: string; // e.g. "Under ₹799", "Best of Styles"
   stock?: number;
+  sku?: string;
+
+  // Surat Ethnic Wear Fields
+  fabric?: string;
+  work?: string;
+  occasion?: string;
+  washCare?: string;
+  setContents?: string;
+  sareeLength?: string;
+  lehengaFlare?: string;
+  dispatchTime?: string;
+  videoUrl?: string;
+  stitchOptions?: StitchOption[];
+  deliveryInfo?: {
+    estimatedDays?: number;
+    isCodAvailable?: boolean;
+    freeShipping?: boolean;
+  };
 }
 
 export interface CartItem {
   product: Product;
   selectedSize: string;
   selectedColor: string;
+  selectedStitchOption?: StitchOption;
   quantity: number;
 }
 
@@ -155,19 +183,71 @@ export interface Order {
   customerPhone?: string;
   items: CartItem[];
   totalAmount: number;
-  discountAmount: number;
-  shippingFee: number;
-  status: 'Pending' | 'Confirmed' | 'Shipped' | 'Delivered' | 'Cancelled';
-  paymentMethod: 'COD' | 'UPI' | 'Card';
+  discountAmount?: number;
+  discount?: number;
+  shippingFee?: number;
+  shippingCharge?: number;
+  subtotal?: number;
+  codCharge?: number;
+  couponCode?: string;
+  coupon?: string;
+  status: 'Pending' | 'Confirmed' | 'Packed' | 'Shipped' | 'Out for Delivery' | 'Delivered' | 'Cancelled' | string;
+  paymentMethod: 'COD' | 'UPI' | 'Card' | 'Online' | string;
+  paymentStatus?: 'pending' | 'paid' | 'failed' | string;
+  paymentId?: string;
   shippingAddress: {
     fullName?: string;
     street: string;
+    address?: string;
     city: string;
     state: string;
     pincode: string;
     phone?: string;
+    country?: string;
   };
+  trackingNumber?: string;
+  carrierName?: string;
+  trackingUrl?: string;
+  deliveredAt?: string;
+  exchangeStatus?: 'none' | 'requested' | 'approved' | 'rejected';
+  exchangeReason?: string;
+  exchangeNotes?: string;
+  exchangeRequestedAt?: string;
+  exchangeResolvedAt?: string;
+  exchangeAdminNotes?: string;
 }
+
+export interface ShippingZone {
+  _id?: string;
+  id?: string;
+  country: string;
+  countryCode?: string;
+  charge: number;
+  freeAbove: number;
+  estimatedDays?: string;
+  isActive?: boolean;
+}
+
+export interface CouponItem {
+  _id?: string;
+  id?: string;
+  code: string;
+  type?: 'percent' | 'flat';
+  discountType?: 'percentage' | 'fixed' | 'percent' | 'flat';
+  value?: number;
+  discountValue?: number;
+  minOrder?: number;
+  minimumOrderValue?: number;
+  maxDiscount?: number;
+  maximumDiscount?: number;
+  expiry?: string;
+  expiryDate?: string;
+  usageLimit?: number;
+  usedCount?: number;
+  paymentMethod?: 'any' | 'prepaid' | 'cod';
+  isActive?: boolean;
+}
+
 
 export interface FilterState {
   searchQuery: string;
@@ -179,6 +259,8 @@ export interface FilterState {
   priceRange: [number, number];
   minDiscount: number;
   sortBy: 'recommended' | 'price-low' | 'price-high' | 'newest' | 'discount';
+  fabrics?: string[];
+  occasions?: string[];
 }
 
 export interface User {
@@ -203,17 +285,50 @@ export interface User {
 export interface Review {
   id: string;
   _id?: string;
-  user?: string;
+  user?: string | any;
   userName: string;
   userAvatar?: string;
   userLocation?: string;
-  product: string;
+  product: string | any;
   productName?: string;
   rating: number;
+  title?: string;
   comment: string;
+  images?: string[];
+  isVerifiedBuyer?: boolean;
   isVerifiedPurchase?: boolean;
+  status?: 'pending' | 'approved' | 'rejected';
+  helpfulVotes?: number;
   createdAt?: string;
   date?: string;
+}
+
+export interface BlogPostItem {
+  _id?: string;
+  id?: string;
+  title: string;
+  slug: string;
+  coverImage: string;
+  excerpt: string;
+  content: string;
+  tags: string[];
+  category: string;
+  author: {
+    name: string;
+    avatar?: string;
+    role?: string;
+  };
+  readTime: string;
+  views?: number;
+  isPublished: boolean;
+  publishedAt?: string;
+  seo?: {
+    metaTitle?: string;
+    metaDescription?: string;
+    keywords?: string[];
+  };
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface BannerItem {
@@ -247,19 +362,24 @@ export interface HomeSectionItem {
   _id?: string;
   title: string;
   subtitle?: string;
-  type: 'story_circles' | 'product_grid' | 'banner_grid' | 'campaign_banner';
+  type: 'story_circles' | 'product_grid' | 'banner_grid' | 'campaign_banner' | 'bestselling_categories';
   order: number;
   isActive: boolean;
   config: {
     filterBy?: 'trending' | 'deal' | 'new' | 'category' | 'all';
     category?: string;
     limit?: number;
+    description?: string;
+    secondaryCtaText?: string;
+    secondaryCtaLink?: string;
     banners?: {
       image: string;
       title: string;
-      subtitle: string;
+      subtitle?: string;
       link: string;
-      badge: string;
+      badge?: string;
+      tag?: string;
+      description?: string;
     }[];
     ctaText?: string;
     ctaLink?: string;

@@ -20,7 +20,11 @@ import { ContactUs } from './pages/ContactUs';
 import { Login } from './pages/Login';
 import { Register } from './pages/Register';
 import { StaticPage } from './pages/StaticPage';
+import { OrderSuccess } from './pages/OrderSuccess';
+import { BlogList } from './pages/BlogList';
+import { BlogPostDetail } from './pages/BlogPostDetail';
 import { SettingsProvider } from './context/SettingsContext';
+
 
 import { AdminLayout } from './components/admin/AdminLayout';
 import { Dashboard as AdminDashboard } from './pages/admin/Dashboard';
@@ -65,8 +69,12 @@ export function App() {
               <Route path="wishlist" element={<Wishlist />} />
               <Route path="checkout" element={<Checkout />} />
               <Route path="orders" element={<Orders />} />
+              <Route path="order-success/:orderId" element={<OrderSuccess />} />
               <Route path="profile" element={<Profile />} />
+
               <Route path="contact" element={<ContactUs />} />
+              <Route path="blog" element={<BlogList />} />
+              <Route path="blog/:slug" element={<BlogPostDetail />} />
               <Route path="pages/:slug" element={<StaticPage />} />
               <Route path="login" element={<Login />} />
               <Route path="register" element={<Register />} />

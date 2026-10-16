@@ -8,7 +8,7 @@ export const Newsletter: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (email.trim()) {
-      showToast('Welcome to VELORA Insiders Club! ✨');
+      showToast('Welcome to Weavera Festive Club! ✨');
       setEmail('');
     }
   };
@@ -20,10 +20,10 @@ export const Newsletter: React.FC = () => {
           STAY IN STYLE
         </span>
         <h2 className="font-serif text-3xl sm:text-4xl font-bold text-gray-900 mb-4 tracking-tight">
-          Join the VELORA Journal
+          Join the Weavera Journal
         </h2>
         <p className="text-xs sm:text-sm text-gray-500 mb-8 leading-relaxed">
-          Sign up for new seasonal drops, exclusive VIP sales, and private editorial preview access.
+          Sign up for new festive saree launches, bridal lehenga drops, and VIP wholesale offers.
         </p>
 
         <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
@@ -37,14 +37,14 @@ export const Newsletter: React.FC = () => {
           />
           <button
             type="submit"
-            className="bg-gray-900 text-white font-semibold text-xs md:text-sm px-8 py-3 uppercase tracking-widest hover:bg-gray-800 transition-colors shadow-sm"
+            className="bg-gray-900 text-white font-semibold text-xs md:text-sm px-8 py-3 uppercase tracking-widest hover:bg-gray-800 transition-colors shadow-sm cursor-pointer"
           >
             SUBSCRIBE
           </button>
         </form>
 
         <p className="text-[11px] text-gray-400 mt-4">
-          By signing up, you agree to VELORA Privacy Policy & Terms. Unsubscribe anytime.
+          By signing up, you agree to Weavera Privacy Policy &amp; Terms. Unsubscribe anytime.
         </p>
       </div>
     </section>

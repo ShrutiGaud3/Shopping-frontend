@@ -8,8 +8,24 @@ interface WishlistState {
   error: string | null;
 }
 
+const getInitialWishlist = (): string[] => {
+  try {
+    const saved = localStorage.getItem('weavera_wishlist') || localStorage.getItem('wishlist');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      if (Array.isArray(parsed)) {
+        // filter out legacy dummy IDs
+        return parsed.filter((id) => id && !['prod-1', 'prod-3', 'prod-5'].includes(id));
+      }
+    }
+  } catch (e) {
+    // fallback
+  }
+  return [];
+};
+
 const initialState: WishlistState = {
-  productIds: ['prod-1', 'prod-3', 'prod-5'],
+  productIds: getInitialWishlist(),
   loading: false,
   error: null
 };
@@ -72,9 +88,15 @@ const wishlistSlice = createSlice({
       } else {
         state.productIds.push(productId);
       }
+      try {
+        localStorage.setItem('weavera_wishlist', JSON.stringify(state.productIds));
+      } catch (e) {}
     },
     removeFromWishlistLocal: (state, action: PayloadAction<string>) => {
       state.productIds = state.productIds.filter((id) => id !== action.payload);
+      try {
+        localStorage.setItem('weavera_wishlist', JSON.stringify(state.productIds));
+      } catch (e) {}
     }
   },
   extraReducers: (builder) => {
@@ -86,6 +108,9 @@ const wishlistSlice = createSlice({
       .addCase(fetchWishlistThunk.fulfilled, (state, action) => {
         state.loading = false;
         state.productIds = action.payload;
+        try {
+          localStorage.setItem('weavera_wishlist', JSON.stringify(state.productIds));
+        } catch (e) {}
       })
       .addCase(fetchWishlistThunk.rejected, (state) => {
         state.loading = false;
@@ -93,10 +118,16 @@ const wishlistSlice = createSlice({
       // Toggle Wishlist Thunk
       .addCase(toggleWishlistThunk.fulfilled, (state, action) => {
         state.productIds = action.payload;
+        try {
+          localStorage.setItem('weavera_wishlist', JSON.stringify(state.productIds));
+        } catch (e) {}
       })
       // Remove Wishlist Thunk
       .addCase(removeFromWishlistThunk.fulfilled, (state, action) => {
         state.productIds = action.payload;
+        try {
+          localStorage.setItem('weavera_wishlist', JSON.stringify(state.productIds));
+        } catch (e) {}
       });
   }
 });

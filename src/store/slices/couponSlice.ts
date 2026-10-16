@@ -17,12 +17,32 @@ interface CouponState {
 
 const DEFAULT_COUPONS: CouponData[] = [
   {
-    _id: 'c1',
-    code: 'VELORA20',
+    _id: 'c0',
+    code: 'PREPAID10',
+    type: 'percent',
     discountType: 'percentage',
-    discountValue: 20,
+    value: 10,
+    discountValue: 10,
+    minOrder: 0,
+    minimumOrderValue: 0,
+    maxDiscount: 500,
+    paymentMethod: 'prepaid',
+    expiryDate: '2027-12-31',
+    usageLimit: 1000,
+    usedCount: 30,
+    isActive: true
+  },
+  {
+    _id: 'c1',
+    code: 'SURATFESTIVE',
+    type: 'percent',
+    discountType: 'percentage',
+    value: 15,
+    discountValue: 15,
+    minOrder: 1499,
     minimumOrderValue: 1499,
-    maximumDiscount: 1000,
+    maxDiscount: 750,
+    paymentMethod: 'any',
     expiryDate: '2027-12-31',
     usageLimit: 1000,
     usedCount: 15,
@@ -31,25 +51,17 @@ const DEFAULT_COUPONS: CouponData[] = [
   {
     _id: 'c2',
     code: 'WELCOME100',
+    type: 'flat',
     discountType: 'fixed',
+    value: 100,
     discountValue: 100,
-    minimumOrderValue: 499,
-    maximumDiscount: 100,
+    minOrder: 999,
+    minimumOrderValue: 999,
+    maxDiscount: 100,
+    paymentMethod: 'any',
     expiryDate: '2027-12-31',
     usageLimit: 1000,
     usedCount: 42,
-    isActive: true
-  },
-  {
-    _id: 'c3',
-    code: 'FESTIVE15',
-    discountType: 'percentage',
-    discountValue: 15,
-    minimumOrderValue: 999,
-    maximumDiscount: 500,
-    expiryDate: '2027-12-31',
-    usageLimit: 500,
-    usedCount: 8,
     isActive: true
   }
 ];
@@ -64,11 +76,11 @@ const initialState: CouponState = {
 export const validateCouponThunk = createAsyncThunk(
   'coupons/validateCoupon',
   async (
-    { code, cartTotal, email }: { code: string; cartTotal: number; email?: string },
+    { code, cartTotal, email, paymentMethod }: { code: string; cartTotal: number; email?: string; paymentMethod?: string },
     { rejectWithValue }
   ) => {
     try {
-      const res = await couponService.validateCoupon(code, cartTotal, email);
+      const res = await couponService.validateCoupon(code, cartTotal, email, paymentMethod);
       if (res.success && res.valid) {
         return {
           code: res.code,
@@ -82,6 +94,7 @@ export const validateCouponThunk = createAsyncThunk(
     }
   }
 );
+
 
 export const fetchCouponsThunk = createAsyncThunk(
   'coupons/fetchCoupons',
