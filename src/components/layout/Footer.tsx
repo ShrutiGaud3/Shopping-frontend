@@ -43,20 +43,20 @@ export const Footer: React.FC = () => {
         
         {/* Brand & WhatsApp Quick Bar */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12 border-b border-[#A3C68C] pb-6 md:pb-8">
-          <div>
+          <div className="w-full sm:w-auto">
             <div className="flex items-center gap-3">
-              <div className="p-1 sm:p-1.5 rounded-xl bg-white/70 backdrop-blur-xs border border-white/80 shadow-xs flex items-center justify-center">
+              <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl bg-white/80 backdrop-blur-xs border border-white/90 shadow-xs flex items-center justify-center p-1 sm:p-1.5">
                 <img
                   src="/logo.png"
                   alt="Weavera Logo"
-                  className="h-10 sm:h-12 w-auto object-contain rounded-lg"
+                  className="w-full h-full object-contain rounded-lg shrink-0"
                 />
               </div>
-              <div>
-                <span className="font-serif text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-widest text-[#183812]">
+              <div className="min-w-0 flex-1">
+                <span className="font-serif text-xl sm:text-3xl md:text-4xl font-extrabold tracking-widest text-[#183812] block leading-none">
                   WEAVERA
                 </span>
-                <p className="text-xs text-[#284C1E] mt-0.5 font-semibold tracking-wider">
+                <p className="text-[11px] sm:text-xs text-[#284C1E] mt-1 font-semibold tracking-wider">
                   Handcrafted Sarees, Bridal Lehengas &amp; Salwar Suits Direct from Surat
                 </p>
               </div>
@@ -65,7 +65,7 @@ export const Footer: React.FC = () => {
 
           <button
             onClick={() => openWhatsAppSupport()}
-            className="flex items-center gap-2 bg-[#183812] text-white hover:bg-[#0E250A] px-4 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all cursor-pointer shadow-md hover:shadow-lg hover:scale-105"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 bg-[#183812] text-white hover:bg-[#0E250A] px-4 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all cursor-pointer shadow-md hover:shadow-lg active:scale-95"
           >
             <MessageCircle className="w-4 h-4 text-[#A8E28B]" />
             <span>Chat on WhatsApp ({settings.whatsapp?.number || '+91 98765 43210'})</span>
@@ -129,23 +129,31 @@ export const Footer: React.FC = () => {
             </ul>
           </div>
 
-          {/* Column 4: Store Support & Address */}
+          {/* Column 4: Store Support & Address (Collapsible dropdown on mobile) */}
           <div className="border-b md:border-b-0 border-[#A3C68C] pb-4 md:pb-0">
-            <h4 className="font-extrabold text-sm text-[#183812] uppercase tracking-wider mb-3 md:mb-4">
-              Store Contact
-            </h4>
-            <div className="space-y-2.5">
+            <button
+              onClick={() => toggleSection('contact')}
+              className="w-full flex items-center justify-between font-extrabold text-sm text-[#183812] uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
+            >
+              <span>Store Contact</span>
+              <ChevronDown className={`w-4 h-4 md:hidden text-[#284C1E] transition-transform duration-300 ${openSections['contact'] ? 'rotate-180 text-[#183812]' : ''}`} />
+            </button>
+            <div className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['contact'] ? 'block' : 'hidden md:block'}`}>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-[#8B1D2C] shrink-0 mt-0.5" />
                 <span>{settings.support?.address || 'Ring Road Textile Market, Surat, Gujarat - 395002'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#183812] shrink-0" />
-                <span>{settings.support?.phone || '+91 98765 43210'}</span>
+                <a href={`tel:${settings.support?.phone || '+919876543210'}`} className="hover:text-[#0E250A] font-semibold transition-colors">
+                  {settings.support?.phone || '+91 98765 43210'}
+                </a>
               </div>
               <div className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-[#8C5E14] shrink-0" />
-                <span>{settings.support?.email || 'support@weavera.in'}</span>
+                <a href={`mailto:${settings.support?.email || 'support@weavera.in'}`} className="hover:text-[#0E250A] font-semibold transition-colors">
+                  {settings.support?.email || 'support@weavera.in'}
+                </a>
               </div>
               <div className="flex items-start gap-2 pt-1 border-t border-[#A3C68C]">
                 <Clock className="w-4 h-4 text-[#1B5269] shrink-0 mt-0.5" />

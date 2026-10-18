@@ -419,7 +419,7 @@ export const DynamicHomeSections: React.FC = () => {
                     <img
                       src="/logo.png"
                       alt="Weavera Logo"
-                      className="w-5 h-5 object-contain rounded-full"
+                      className="w-5 h-5 object-contain rounded-full shrink-0"
                       onError={(e) => ((e.target as HTMLElement).style.display = 'none')}
                     />
                     <span className="font-serif text-xs font-bold tracking-[0.25em] text-white uppercase">
