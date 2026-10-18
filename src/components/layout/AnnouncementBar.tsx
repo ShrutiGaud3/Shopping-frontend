@@ -36,7 +36,7 @@ export const AnnouncementBar: React.FC = () => {
   };
 
   return (
-    <aside aria-label="Announcement" className="bg-gradient-to-r from-amber-50 via-rose-50 to-amber-50 border-b border-amber-200/60 text-slate-800 text-[11px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-4 transition-all relative select-none">
+    <aside aria-label="Announcement" className="bg-[#BEDAA9] border-b border-[#A3C68C] text-[#183812] text-[11px] sm:text-xs py-1.5 sm:py-2 px-3 sm:px-4 transition-all relative select-none shadow-2xs">
       <div className="max-w-7xl mx-auto flex items-center justify-between text-center relative">
         
         {/* Left Arrow (if multi-item) */}
@@ -44,7 +44,7 @@ export const AnnouncementBar: React.FC = () => {
           {activeAnnouncements.length > 1 && (
             <button
               onClick={handlePrev}
-              className="text-slate-400 hover:text-slate-800 transition p-0.5 rounded-full hover:bg-black/5 cursor-pointer"
+              className="text-[#284C1E] hover:text-[#0E250A] transition p-0.5 rounded-full hover:bg-black/5 cursor-pointer"
               aria-label="Previous Announcement"
             >
               <ChevronLeft className="w-3.5 h-3.5" />
@@ -54,12 +54,12 @@ export const AnnouncementBar: React.FC = () => {
 
         {/* Center Text with Optional Link */}
         <div className="flex-1 px-2 flex items-center justify-center gap-2 overflow-hidden">
-          <span className="font-medium tracking-wide truncate max-w-full inline-flex items-center">
+          <span className="font-bold tracking-wide truncate max-w-full inline-flex items-center text-[#183812]">
             {currentItem.text}
             {currentItem.link && (
               <Link
                 to={currentItem.link}
-                className="font-bold text-amber-900 underline hover:text-black ml-1.5 inline-flex items-center gap-0.5 shrink-0"
+                className="font-extrabold text-[#183812] underline hover:text-[#0E250A] ml-1.5 inline-flex items-center gap-0.5 shrink-0"
               >
                 Shop Now &gt;
               </Link>
@@ -72,7 +72,7 @@ export const AnnouncementBar: React.FC = () => {
           {activeAnnouncements.length > 1 && (
             <button
               onClick={handleNext}
-              className="text-slate-400 hover:text-slate-800 transition p-0.5 rounded-full hover:bg-black/5 cursor-pointer"
+              className="text-[#284C1E] hover:text-[#0E250A] transition p-0.5 rounded-full hover:bg-black/5 cursor-pointer"
               aria-label="Next Announcement"
             >
               <ChevronRight className="w-3.5 h-3.5" />
@@ -81,7 +81,7 @@ export const AnnouncementBar: React.FC = () => {
 
           <button
             onClick={() => setVisible(false)}
-            className="text-slate-400 hover:text-slate-900 transition-colors p-1 rounded-full hover:bg-black/5 cursor-pointer"
+            className="text-[#284C1E] hover:text-[#0E250A] transition-colors p-1 rounded-full hover:bg-black/5 cursor-pointer"
             aria-label="Close Announcement"
             title="Dismiss Announcement"
           >
