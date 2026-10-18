@@ -82,21 +82,28 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categor
           </button>
         </div>
 
-        {/* Mobile Quick Action Buttons: Shopping Bag & Track Orders */}
-        <div className="p-3 bg-slate-50 border-b border-slate-100 grid grid-cols-2 gap-2 shrink-0">
+        {/* Mobile Quick Action Buttons: Shopping Bag, Wishlist & Track Orders */}
+        <div className="p-2.5 bg-slate-50 border-b border-slate-100 grid grid-cols-3 gap-1.5 shrink-0">
           <button
             onClick={() => handleNavClick('/cart')}
-            className="flex items-center justify-center gap-2 py-2.5 px-3 bg-[#183812] text-white text-xs font-bold rounded-lg shadow-xs hover:bg-[#0E250A] transition-colors cursor-pointer active:scale-95"
+            className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 bg-[#183812] text-white text-[11px] font-bold rounded-lg shadow-xs hover:bg-[#0E250A] transition-colors cursor-pointer active:scale-95"
           >
-            <ShoppingBag className="w-4 h-4 text-[#BEDAA9]" />
+            <ShoppingBag className="w-3.5 h-3.5 text-[#BEDAA9]" />
             <span>Bag {totalCartCount > 0 ? `(${totalCartCount})` : ''}</span>
           </button>
           <button
-            onClick={() => handleNavClick('/orders')}
-            className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white border border-slate-200 text-slate-800 text-xs font-bold rounded-lg shadow-xs hover:bg-slate-50 transition-colors cursor-pointer active:scale-95"
+            onClick={() => handleNavClick('/wishlist')}
+            className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 bg-rose-50 border border-rose-200 text-rose-800 text-[11px] font-bold rounded-lg shadow-xs hover:bg-rose-100 transition-colors cursor-pointer active:scale-95"
           >
-            <Package className="w-4 h-4 text-[#183812]" />
-            <span>My Orders</span>
+            <Heart className="w-3.5 h-3.5 text-rose-600 fill-rose-500/20" />
+            <span>Wishlist {wishlist.length > 0 ? `(${wishlist.length})` : ''}</span>
+          </button>
+          <button
+            onClick={() => handleNavClick('/orders')}
+            className="flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-1.5 py-2 px-1.5 bg-white border border-slate-200 text-slate-800 text-[11px] font-bold rounded-lg shadow-xs hover:bg-slate-50 transition-colors cursor-pointer active:scale-95"
+          >
+            <Package className="w-3.5 h-3.5 text-[#183812]" />
+            <span>Orders</span>
           </button>
         </div>
 

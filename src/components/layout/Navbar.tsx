@@ -262,10 +262,10 @@ export const Navbar: React.FC = () => {
                 <Search className="w-5 h-5" />
               </button>
 
-              {/* Wishlist */}
+              {/* Wishlist - Hidden on mobile, accessible via mobile drawer menu */}
               <Link
                 to="/wishlist"
-                className="relative p-2 text-slate-700 hover:text-rose-600 transition-colors rounded-full hover:bg-rose-50"
+                className="hidden sm:flex relative p-2 text-slate-700 hover:text-rose-600 transition-colors rounded-full hover:bg-rose-50"
                 title="Wishlist"
               >
                 <Heart className="w-5 h-5" />
@@ -290,8 +290,8 @@ export const Navbar: React.FC = () => {
                 )}
               </Link>
 
-              {/* Account Dropdown - Hidden on mobile screen, accessible via mobile drawer menu */}
-              <div className="hidden sm:block relative">
+              {/* Account / My Profile Dropdown - Visible across all screens */}
+              <div className="relative">
                 {user ? (
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}
@@ -309,9 +309,11 @@ export const Navbar: React.FC = () => {
                 ) : (
                   <Link
                     to="/login"
-                    className="text-xs font-semibold text-slate-800 hover:text-white hover:bg-slate-900 border border-slate-300 px-3.5 py-1.5 rounded-full transition-colors"
+                    className="flex items-center gap-1.5 text-xs font-semibold text-slate-800 hover:text-white hover:bg-slate-900 border border-slate-300 p-1.5 sm:px-3.5 sm:py-1.5 rounded-full transition-colors"
+                    title="Sign In"
                   >
-                    Sign In
+                    <User className="w-4 h-4 sm:hidden" />
+                    <span className="hidden sm:inline">Sign In</span>
                   </Link>
                 )}
 
