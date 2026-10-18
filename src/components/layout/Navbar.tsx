@@ -155,16 +155,23 @@ export const Navbar: React.FC = () => {
 
               <Link
                 to="/"
-                className="flex items-center gap-2.5 transition-opacity hover:opacity-90"
+                className="flex items-center gap-2.5 sm:gap-3 transition-transform hover:scale-[1.02] group"
               >
-                <img
-                  src="/logo.png"
-                  alt="Weavera Logo"
-                  className="h-9 sm:h-12 w-auto object-contain rounded"
-                />
-                <span className="font-serif text-xl sm:text-2xl md:text-3xl font-bold tracking-widest text-slate-900">
-                  WEAVERA
-                </span>
+                <div className="p-1 sm:p-1.5 rounded-xl bg-[#BEDAA9]/35 border border-[#BEDAA9] shadow-xs flex items-center justify-center transition-all group-hover:border-[#94BC7B] group-hover:bg-[#BEDAA9]/50">
+                  <img
+                    src="/logo.png"
+                    alt="Weavera Logo"
+                    className="h-8 sm:h-11 w-auto object-contain rounded-lg"
+                  />
+                </div>
+                <div className="flex flex-col">
+                  <span className="font-serif text-xl sm:text-2xl md:text-3xl font-extrabold tracking-[0.16em] text-[#183812] leading-none transition-colors group-hover:text-[#0E250A]">
+                    WEAVERA
+                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.26em] font-bold text-[#3E6830] hidden sm:block mt-0.5">
+                    Surat Ethnic Luxury
+                  </span>
+                </div>
               </Link>
             </div>
 

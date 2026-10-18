@@ -55,15 +55,22 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categor
       <div className="relative w-4/5 max-w-sm bg-white h-full shadow-2xl flex flex-col z-10 overflow-y-auto">
         {/* Drawer Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <div className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="Weavera"
-              className="h-8 w-auto object-contain rounded"
-            />
-            <span className="font-serif text-2xl font-bold tracking-widest text-slate-900">
-              WEAVERA
-            </span>
+          <div className="flex items-center gap-2.5">
+            <div className="p-1 rounded-lg bg-[#BEDAA9]/35 border border-[#BEDAA9] shadow-xs flex items-center justify-center">
+              <img
+                src="/logo.png"
+                alt="Weavera Logo"
+                className="h-8 w-auto object-contain rounded"
+              />
+            </div>
+            <div className="flex flex-col">
+              <span className="font-serif text-xl font-extrabold tracking-widest text-[#183812] leading-none">
+                WEAVERA
+              </span>
+              <span className="text-[8px] uppercase tracking-widest font-bold text-[#3E6830] mt-0.5">
+                Surat Ethnic Luxury
+              </span>
+            </div>
           </div>
           <button
             onClick={onClose}

@@ -38,115 +38,119 @@ export const Footer: React.FC = () => {
   };
 
   return (
-    <footer id="footer" className="bg-[#FAF7F2] text-stone-800 pt-12 md:pt-16 pb-12 border-t border-[#EBE3D5] w-full max-w-full overflow-hidden">
+    <footer id="footer" className="bg-[#BEDAA9] text-[#183812] pt-12 md:pt-16 pb-12 border-t border-[#A3C68C] w-full max-w-full overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Brand & WhatsApp Quick Bar */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12 border-b border-[#EBE3D5] pb-6 md:pb-8">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12 border-b border-[#A3C68C] pb-6 md:pb-8">
           <div>
             <div className="flex items-center gap-3">
-              <img
-                src="/logo.png"
-                alt="Weavera Logo"
-                className="h-10 sm:h-12 w-auto object-contain rounded"
-              />
-              <span className="font-serif text-2xl sm:text-3xl md:text-4xl font-bold tracking-widest text-stone-900">
-                WEAVERA
-              </span>
+              <div className="p-1 sm:p-1.5 rounded-xl bg-white/70 backdrop-blur-xs border border-white/80 shadow-xs flex items-center justify-center">
+                <img
+                  src="/logo.png"
+                  alt="Weavera Logo"
+                  className="h-10 sm:h-12 w-auto object-contain rounded-lg"
+                />
+              </div>
+              <div>
+                <span className="font-serif text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-widest text-[#183812]">
+                  WEAVERA
+                </span>
+                <p className="text-xs text-[#284C1E] mt-0.5 font-semibold tracking-wider">
+                  Handcrafted Sarees, Bridal Lehengas &amp; Salwar Suits Direct from Surat
+                </p>
+              </div>
             </div>
-            <p className="text-xs text-stone-600 mt-1 font-medium">
-              Handcrafted Sarees, Bridal Lehengas &amp; Salwar Suits Direct from Surat
-            </p>
           </div>
 
           <button
             onClick={() => openWhatsAppSupport()}
-            className="flex items-center gap-2 bg-emerald-50 text-emerald-800 border border-emerald-300 px-4 py-2 rounded-full text-xs font-semibold hover:bg-emerald-100 transition-colors cursor-pointer shadow-xs"
+            className="flex items-center gap-2 bg-[#183812] text-white hover:bg-[#0E250A] px-4 py-2.5 rounded-full text-xs font-bold tracking-wide transition-all cursor-pointer shadow-md hover:shadow-lg hover:scale-105"
           >
-            <MessageCircle className="w-4 h-4 text-emerald-600" />
+            <MessageCircle className="w-4 h-4 text-[#A8E28B]" />
             <span>Chat on WhatsApp ({settings.whatsapp?.number || '+91 98765 43210'})</span>
           </button>
         </div>
 
         {/* Multi-Column Grid Layout */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 mb-12 md:mb-16 text-xs text-stone-600">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 mb-12 md:mb-16 text-xs text-[#284C1E]">
           
           {/* Column 1: Ethnic Categories */}
-          <div className="border-b md:border-b-0 border-[#EBE3D5] pb-4 md:pb-0">
+          <div className="border-b md:border-b-0 border-[#A3C68C] pb-4 md:pb-0">
             <button
               onClick={() => toggleSection('ethnic')}
-              className="w-full flex items-center justify-between font-bold text-sm text-stone-900 uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
+              className="w-full flex items-center justify-between font-extrabold text-sm text-[#183812] uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
             >
               <span>Ethnic Wear</span>
-              <ChevronDown className={`w-4 h-4 md:hidden text-stone-500 transition-transform duration-300 ${openSections['ethnic'] ? 'rotate-180 text-stone-900' : ''}`} />
+              <ChevronDown className={`w-4 h-4 md:hidden text-[#284C1E] transition-transform duration-300 ${openSections['ethnic'] ? 'rotate-180 text-[#183812]' : ''}`} />
             </button>
             <ul className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['ethnic'] ? 'block' : 'hidden md:block'}`}>
-              <li><Link to="/products?category=Sarees" className="hover:text-rose-700 transition-colors">Silk &amp; Designer Sarees</Link></li>
-              <li><Link to="/products?category=Lehengas" className="hover:text-rose-700 transition-colors">Bridal &amp; Celebration Lehengas</Link></li>
-              <li><Link to="/products?category=Salwar%20Suits" className="hover:text-rose-700 transition-colors">Festive &amp; Anarkali Salwar Suits</Link></li>
+              <li><Link to="/products?category=Sarees" className="hover:text-[#0E250A] font-semibold transition-colors">Silk &amp; Designer Sarees</Link></li>
+              <li><Link to="/products?category=Lehengas" className="hover:text-[#0E250A] font-semibold transition-colors">Bridal &amp; Celebration Lehengas</Link></li>
+              <li><Link to="/products?category=Salwar%20Suits" className="hover:text-[#0E250A] font-semibold transition-colors">Festive &amp; Anarkali Salwar Suits</Link></li>
             </ul>
           </div>
 
           {/* Column 2: Customer Policies (Dynamic CMS Pages) */}
-          <div className="border-b md:border-b-0 border-[#EBE3D5] pb-4 md:pb-0">
+          <div className="border-b md:border-b-0 border-[#A3C68C] pb-4 md:pb-0">
             <button
               onClick={() => toggleSection('policies')}
-              className="w-full flex items-center justify-between font-bold text-sm text-stone-900 uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
+              className="w-full flex items-center justify-between font-extrabold text-sm text-[#183812] uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
             >
               <span>Customer Care</span>
-              <ChevronDown className={`w-4 h-4 md:hidden text-stone-500 transition-transform duration-300 ${openSections['policies'] ? 'rotate-180 text-stone-900' : ''}`} />
+              <ChevronDown className={`w-4 h-4 md:hidden text-[#284C1E] transition-transform duration-300 ${openSections['policies'] ? 'rotate-180 text-[#183812]' : ''}`} />
             </button>
             <ul className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['policies'] ? 'block' : 'hidden md:block'}`}>
-              <li><Link to="/pages/about-us" className="hover:text-rose-700 transition-colors">About Us</Link></li>
-              <li><Link to="/pages/shipping-policy" className="hover:text-rose-700 transition-colors">Shipping &amp; Delivery</Link></li>
-              <li><Link to="/pages/return-policy" className="hover:text-rose-700 transition-colors">Returns &amp; Exchange Policy</Link></li>
-              <li><Link to="/pages/terms-and-conditions" className="hover:text-rose-700 transition-colors">Terms of Service</Link></li>
-              <li><Link to="/pages/privacy-policy" className="hover:text-rose-700 transition-colors">Privacy Policy</Link></li>
-              <li><Link to="/pages/faq" className="hover:text-rose-700 transition-colors">Frequently Asked Questions (FAQ)</Link></li>
+              <li><Link to="/pages/about-us" className="hover:text-[#0E250A] font-semibold transition-colors">About Us</Link></li>
+              <li><Link to="/pages/shipping-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Shipping &amp; Delivery</Link></li>
+              <li><Link to="/pages/return-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Returns &amp; Exchange Policy</Link></li>
+              <li><Link to="/pages/terms-and-conditions" className="hover:text-[#0E250A] font-semibold transition-colors">Terms of Service</Link></li>
+              <li><Link to="/pages/privacy-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/pages/faq" className="hover:text-[#0E250A] font-semibold transition-colors">Frequently Asked Questions (FAQ)</Link></li>
             </ul>
           </div>
 
           {/* Column 3: Quick Navigation & Account */}
-          <div className="border-b md:border-b-0 border-[#EBE3D5] pb-4 md:pb-0">
+          <div className="border-b md:border-b-0 border-[#A3C68C] pb-4 md:pb-0">
             <button
               onClick={() => toggleSection('account')}
-              className="w-full flex items-center justify-between font-bold text-sm text-stone-900 uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
+              className="w-full flex items-center justify-between font-extrabold text-sm text-[#183812] uppercase tracking-wider mb-2 md:mb-4 py-1 md:py-0 text-left cursor-pointer"
             >
               <span>My Account</span>
-              <ChevronDown className={`w-4 h-4 md:hidden text-stone-500 transition-transform duration-300 ${openSections['account'] ? 'rotate-180 text-stone-900' : ''}`} />
+              <ChevronDown className={`w-4 h-4 md:hidden text-[#284C1E] transition-transform duration-300 ${openSections['account'] ? 'rotate-180 text-[#183812]' : ''}`} />
             </button>
             <ul className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['account'] ? 'block' : 'hidden md:block'}`}>
-              <li><Link to="/orders" className="hover:text-rose-700 transition-colors">Track My Order</Link></li>
-              <li><Link to="/cart" className="hover:text-rose-700 transition-colors">Shopping Bag</Link></li>
-              <li><Link to="/wishlist" className="hover:text-rose-700 transition-colors">Saved Wishlist</Link></li>
-              <li><Link to="/blog" className="hover:text-rose-700 transition-colors">Style Stories &amp; Guides</Link></li>
-              <li><Link to="/profile" className="hover:text-rose-700 transition-colors">My Profile</Link></li>
-              <li><Link to="/contact" className="hover:text-rose-700 transition-colors">Contact Support Desk</Link></li>
+              <li><Link to="/orders" className="hover:text-[#0E250A] font-semibold transition-colors">Track My Order</Link></li>
+              <li><Link to="/cart" className="hover:text-[#0E250A] font-semibold transition-colors">Shopping Bag</Link></li>
+              <li><Link to="/wishlist" className="hover:text-[#0E250A] font-semibold transition-colors">Saved Wishlist</Link></li>
+              <li><Link to="/blog" className="hover:text-[#0E250A] font-semibold transition-colors">Style Stories &amp; Guides</Link></li>
+              <li><Link to="/profile" className="hover:text-[#0E250A] font-semibold transition-colors">My Profile</Link></li>
+              <li><Link to="/contact" className="hover:text-[#0E250A] font-semibold transition-colors">Contact Support Desk</Link></li>
             </ul>
           </div>
 
           {/* Column 4: Store Support & Address */}
-          <div className="border-b md:border-b-0 border-[#EBE3D5] pb-4 md:pb-0">
-            <h4 className="font-bold text-sm text-stone-900 uppercase tracking-wider mb-3 md:mb-4">
+          <div className="border-b md:border-b-0 border-[#A3C68C] pb-4 md:pb-0">
+            <h4 className="font-extrabold text-sm text-[#183812] uppercase tracking-wider mb-3 md:mb-4">
               Store Contact
             </h4>
             <div className="space-y-2.5">
               <div className="flex items-start gap-2">
-                <MapPin className="w-4 h-4 text-rose-600 shrink-0 mt-0.5" />
+                <MapPin className="w-4 h-4 text-[#8B1D2C] shrink-0 mt-0.5" />
                 <span>{settings.support?.address || 'Ring Road Textile Market, Surat, Gujarat - 395002'}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Phone className="w-4 h-4 text-emerald-600 shrink-0" />
+                <Phone className="w-4 h-4 text-[#183812] shrink-0" />
                 <span>{settings.support?.phone || '+91 98765 43210'}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Mail className="w-4 h-4 text-amber-600 shrink-0" />
+                <Mail className="w-4 h-4 text-[#8C5E14] shrink-0" />
                 <span>{settings.support?.email || 'support@weavera.in'}</span>
               </div>
-              <div className="flex items-start gap-2 pt-1 border-t border-[#EBE3D5]">
-                <Clock className="w-4 h-4 text-sky-600 shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 pt-1 border-t border-[#A3C68C]">
+                <Clock className="w-4 h-4 text-[#1B5269] shrink-0 mt-0.5" />
                 <div>
-                  <span className="block text-stone-800 font-semibold">{settings.workingHours?.days || 'Mon - Sat'}</span>
+                  <span className="block text-[#183812] font-bold">{settings.workingHours?.days || 'Mon - Sat'}</span>
                   <span>{settings.workingHours?.timing || '10:00 AM - 8:00 PM IST'}</span>
                 </div>
               </div>
@@ -155,10 +159,10 @@ export const Footer: React.FC = () => {
 
           {/* Column 5: Stay In Touch (Newsletter) */}
           <div className="pt-2 md:pt-0 text-left">
-            <h4 className="font-bold text-sm text-stone-900 uppercase tracking-wider mb-3 md:mb-4">
+            <h4 className="font-extrabold text-sm text-[#183812] uppercase tracking-wider mb-3 md:mb-4">
               Festive Club
             </h4>
-            <p className="text-stone-600 mb-4 text-xs leading-relaxed">
+            <p className="text-[#284C1E] mb-4 text-xs font-medium leading-relaxed">
               Subscribe to get exclusive Surat manufacturer prices, festival drop previews &amp; VIP discount codes.
             </p>
             <form onSubmit={handleSubscribe} className="relative max-w-sm mb-4">
@@ -168,16 +172,16 @@ export const Footer: React.FC = () => {
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full bg-white border border-[#DDD5C7] rounded-sm py-2.5 pl-3 pr-10 text-xs text-stone-900 placeholder-stone-400 focus:outline-none focus:border-stone-800 transition-colors shadow-xs"
+                className="w-full bg-white/95 border border-[#A3C68C] rounded-sm py-2.5 pl-3 pr-10 text-xs text-[#183812] placeholder-[#4A703F] focus:outline-none focus:border-[#183812] focus:bg-white transition-colors shadow-xs font-medium"
               />
               <button
                 type="submit"
                 disabled={subscribing}
-                className="absolute right-2 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-900 p-1 cursor-pointer disabled:opacity-50"
+                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#183812] hover:text-[#0E250A] p-1 cursor-pointer disabled:opacity-50"
                 aria-label="Subscribe"
               >
                 {subscribing ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-rose-600" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#183812]" />
                 ) : (
                   <Send className="w-3.5 h-3.5" />
                 )}
@@ -185,12 +189,12 @@ export const Footer: React.FC = () => {
             </form>
 
             {/* Social Icons */}
-            <div className="flex items-center gap-3 text-stone-600 pt-2">
+            <div className="flex items-center gap-3 text-[#284C1E] pt-2">
               <a
                 href={settings.branding?.socialLinks?.instagram || 'https://instagram.com'}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-rose-600 transition p-1.5 rounded-full hover:bg-stone-200/60"
+                className="hover:text-[#183812] transition p-2 rounded-full hover:bg-white/50"
                 title="Instagram"
                 aria-label="Instagram"
               >
@@ -202,7 +206,7 @@ export const Footer: React.FC = () => {
                 href={settings.branding?.socialLinks?.facebook || 'https://facebook.com'}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-blue-600 transition p-1.5 rounded-full hover:bg-stone-200/60"
+                className="hover:text-[#183812] transition p-2 rounded-full hover:bg-white/50"
                 title="Facebook"
                 aria-label="Facebook"
               >
@@ -214,7 +218,7 @@ export const Footer: React.FC = () => {
                 href={settings.branding?.socialLinks?.youtube || 'https://youtube.com'}
                 target="_blank"
                 rel="noreferrer"
-                className="hover:text-red-600 transition p-1.5 rounded-full hover:bg-stone-200/60"
+                className="hover:text-[#183812] transition p-2 rounded-full hover:bg-white/50"
                 title="YouTube"
                 aria-label="YouTube"
               >
@@ -227,15 +231,15 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Footer Bottom Bar */}
-        <div className="pt-8 border-t border-[#EBE3D5] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-stone-500 text-center md:text-left">
-          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 text-stone-600">
-            <Link to="/pages/terms-and-conditions" className="hover:text-stone-900 transition-colors">Terms &amp; Conditions</Link>
-            <Link to="/pages/privacy-policy" className="hover:text-stone-900 transition-colors">Privacy Policy</Link>
-            <Link to="/pages/shipping-policy" className="hover:text-stone-900 transition-colors">Shipping Policy</Link>
-            <Link to="/pages/faq" className="hover:text-stone-900 transition-colors">FAQs</Link>
+        <div className="pt-8 border-t border-[#A3C68C] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#284C1E] text-center md:text-left">
+          <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 text-[#284C1E]">
+            <Link to="/pages/terms-and-conditions" className="hover:text-[#183812] font-semibold transition-colors">Terms &amp; Conditions</Link>
+            <Link to="/pages/privacy-policy" className="hover:text-[#183812] font-semibold transition-colors">Privacy Policy</Link>
+            <Link to="/pages/shipping-policy" className="hover:text-[#183812] font-semibold transition-colors">Shipping Policy</Link>
+            <Link to="/pages/faq" className="hover:text-[#183812] font-semibold transition-colors">FAQs</Link>
           </div>
 
-          <p>{settings.branding?.footerText || '© 2026 Weavera Ethnic Fashion Inc. All rights reserved.'}</p>
+          <p className="text-[#2E5424] font-medium">{settings.branding?.footerText || '© 2026 Weavera Ethnic Fashion Inc. All rights reserved.'}</p>
         </div>
 
       </div>

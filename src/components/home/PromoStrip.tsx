@@ -41,19 +41,19 @@ export const PromoStrip: React.FC = () => {
   return (
     <div
       aria-label="Promotional announcements"
-      className="bg-[#FAF7F2] text-stone-800 py-2.5 sm:py-3 text-[10px] sm:text-xs font-bold tracking-widest uppercase border-y border-[#EBE3D5] overflow-hidden relative select-none w-full"
+      className="bg-[#BEDAA9] text-[#183812] py-2.5 sm:py-3 text-[10px] sm:text-xs font-bold tracking-widest uppercase border-y border-[#A3C68C] overflow-hidden relative select-none w-full shadow-xs"
     >
       {/* Left Gradient Fade Mask */}
-      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-[#FAF7F2] via-[#FAF7F2]/90 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 left-0 w-8 sm:w-16 bg-gradient-to-r from-[#BEDAA9] via-[#BEDAA9]/90 to-transparent z-10" />
 
       {/* Infinite Seamless Scrolling Ticker Track */}
       <div className="flex animate-marquee items-center">
         {marqueeList.map((item, idx) => {
           const content = (
-            <div className="inline-flex items-center gap-2 text-stone-700 hover:text-stone-950 transition-colors duration-200 whitespace-nowrap px-4 sm:px-6">
+            <div className="inline-flex items-center gap-2 text-[#183812] hover:text-[#0E250A] transition-colors duration-200 whitespace-nowrap px-4 sm:px-6">
               {getIcon(item.icon)}
-              <span className="tracking-widest">{item.text}</span>
-              <span className="text-amber-700/60 mx-2 text-[10px] select-none">✦</span>
+              <span className="tracking-widest font-extrabold">{item.text}</span>
+              <span className="text-[#2E5424] mx-2 text-[10px] select-none">✦</span>
             </div>
           );
 
@@ -70,7 +70,7 @@ export const PromoStrip: React.FC = () => {
       </div>
 
       {/* Right Gradient Fade Mask */}
-      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-[#FAF7F2] via-[#FAF7F2]/90 to-transparent z-10" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 w-8 sm:w-16 bg-gradient-to-l from-[#BEDAA9] via-[#BEDAA9]/90 to-transparent z-10" />
     </div>
   );
 };
