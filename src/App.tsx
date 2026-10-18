@@ -40,10 +40,13 @@ import { WhatsAppFloat } from './components/layout/WhatsAppFloat';
 
 const MainLayout: React.FC = () => {
   return (
-    <div className="min-h-screen flex flex-col justify-between bg-white w-full max-w-full overflow-x-hidden">
-      <div className="w-full max-w-full overflow-x-hidden">
-        <AnnouncementBar />
-        <Navbar />
+    <div className="min-h-screen flex flex-col justify-between bg-white w-full max-w-full">
+      <div className="w-full max-w-full flex-1">
+        {/* Fixed / Sticky Header Container across all mobile and desktop viewports */}
+        <header className="sticky top-0 z-40 w-full bg-white shadow-xs">
+          <AnnouncementBar />
+          <Navbar />
+        </header>
         <Outlet />
       </div>
       <Footer />

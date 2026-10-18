@@ -137,7 +137,7 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
-      <header className="sticky top-0 z-40 bg-white border-b border-slate-200/90 shadow-xs">
+      <div className="w-full bg-white border-b border-slate-200/90 shadow-xs">
         
         {/* Main Header Bar */}
         <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
@@ -531,7 +531,7 @@ export const Navbar: React.FC = () => {
             </form>
           </div>
         )}
-      </header>
+      </div>
 
       {/* Mobile Drawer Menu with Dynamic Categories */}
       <MobileMenu

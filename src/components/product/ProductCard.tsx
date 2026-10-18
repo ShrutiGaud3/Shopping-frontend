@@ -53,29 +53,34 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
           />
         </button>
 
-        {/* Quick Add Button Overlay */}
-        <div className="absolute inset-x-0 bottom-0 p-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300 bg-gradient-to-t from-black/50 via-transparent to-transparent flex justify-center">
+        {/* Quick Add Button Overlay (Desktop Card Hover) */}
+        <div className="hidden sm:flex absolute inset-x-0 bottom-0 p-3 z-20 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-gradient-to-t from-black/75 via-black/40 to-transparent justify-center pointer-events-auto">
           {isOutOfStock ? (
             <button
               disabled
-              className="w-full bg-gray-300 text-gray-700 font-bold text-xs py-2.5 px-4 uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed opacity-95 shadow-md"
+              className="w-full bg-gray-300 text-gray-700 font-bold text-xs py-2.5 px-4 uppercase tracking-wider flex items-center justify-center gap-2 cursor-not-allowed opacity-95 shadow-md rounded-xs"
             >
               Out of Stock
             </button>
           ) : (
             <button
-              onClick={() => addToCart(product)}
-              className="w-full bg-white text-gray-900 font-medium text-xs py-2.5 px-4 uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-gray-900 hover:text-white transition-colors shadow-md cursor-pointer"
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                addToCart(product);
+              }}
+              className="w-full bg-[#183812] text-white hover:bg-[#0E250A] font-bold text-xs py-2.5 px-4 uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-xl cursor-pointer rounded-xs active:scale-95"
             >
-              <ShoppingBag className="w-3.5 h-3.5" />
-              Add to Bag
+              <ShoppingBag className="w-3.5 h-3.5 text-[#BEDAA9]" />
+              <span>Add to Cart</span>
             </button>
           )}
         </div>
       </div>
 
       {/* Product Information */}
-      <div className="p-3 flex flex-col flex-1 justify-between">
+      <div className="p-2.5 sm:p-3 flex flex-col flex-1 justify-between">
         <div>
           {/* Brand & Rating Row */}
           <div className="flex items-center justify-between mb-1">
@@ -95,20 +100,47 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
         </div>
 
         {/* Pricing Breakdown */}
-        <div className="flex items-center gap-2 flex-wrap pt-0.5">
-          <span className="text-sm font-bold text-gray-900">
-            ₹{product.price.toLocaleString()}
-          </span>
-          {product.originalPrice > product.price && (
-            <>
-              <span className="text-xs text-gray-400 line-through">
-                ₹{product.originalPrice.toLocaleString()}
-              </span>
-              <span className="badge-discount">
-                ({product.discountPercent}% off)
-              </span>
-            </>
-          )}
+        <div>
+          <div className="flex items-center gap-2 flex-wrap pt-0.5">
+            <span className="text-sm font-bold text-gray-900">
+              ₹{product.price.toLocaleString()}
+            </span>
+            {product.originalPrice > product.price && (
+              <>
+                <span className="text-xs text-gray-400 line-through">
+                  ₹{product.originalPrice.toLocaleString()}
+                </span>
+                <span className="badge-discount">
+                  ({product.discountPercent}% off)
+                </span>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Quick Add Action Button (Always Accessible on Touchscreens) */}
+          <div className="pt-2 sm:hidden">
+            {isOutOfStock ? (
+              <button
+                disabled
+                className="w-full bg-slate-200 text-slate-500 font-bold text-[11px] py-1.5 px-2 uppercase rounded-xs flex items-center justify-center gap-1 cursor-not-allowed"
+              >
+                Out of Stock
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  addToCart(product);
+                }}
+                className="w-full bg-[#183812] text-white active:bg-[#0E250A] font-bold text-[11px] py-2 px-2 uppercase tracking-wider rounded-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
+              >
+                <ShoppingBag className="w-3 h-3 text-[#BEDAA9]" />
+                <span>Add to Cart</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>
