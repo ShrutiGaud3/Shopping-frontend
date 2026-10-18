@@ -144,10 +144,10 @@ export const Navbar: React.FC = () => {
           <div className="flex items-center justify-between h-16 sm:h-20 gap-2 sm:gap-6">
             
             {/* Left: Mobile Toggle & Brand Logo */}
-            <div className="flex items-center gap-2 sm:gap-4">
+            <div className="flex items-center gap-2 sm:gap-4 shrink-0">
               <button
                 onClick={() => setMobileMenuOpen(true)}
-                className="lg:hidden p-1.5 text-slate-700 hover:text-black transition-colors focus:outline-none"
+                className="lg:hidden p-1.5 text-slate-700 hover:text-black transition-colors focus:outline-none shrink-0"
                 aria-label="Open Navigation Menu"
               >
                 <Menu className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -155,17 +155,17 @@ export const Navbar: React.FC = () => {
 
               <Link
                 to="/"
-                className="flex items-center gap-2.5 sm:gap-3 transition-transform hover:scale-[1.02] group"
+                className="flex items-center gap-2 sm:gap-2.5 transition-transform hover:scale-[1.02] group shrink-0"
               >
-                <div className="p-1 sm:p-1.5 rounded-xl bg-[#BEDAA9]/35 border border-[#BEDAA9] shadow-xs flex items-center justify-center transition-all group-hover:border-[#94BC7B] group-hover:bg-[#BEDAA9]/50">
+                <div className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 rounded-xl bg-[#BEDAA9]/35 border border-[#BEDAA9] shadow-xs flex items-center justify-center p-1 sm:p-1.5 transition-all group-hover:border-[#94BC7B] group-hover:bg-[#BEDAA9]/50">
                   <img
                     src="/logo.png"
                     alt="Weavera Logo"
-                    className="h-8 sm:h-11 w-auto object-contain rounded-lg"
+                    className="w-full h-full object-contain rounded-lg shrink-0"
                   />
                 </div>
-                <div className="flex flex-col">
-                  <span className="font-serif text-xl sm:text-2xl md:text-3xl font-extrabold tracking-[0.16em] text-[#183812] leading-none transition-colors group-hover:text-[#0E250A]">
+                <div className="flex flex-col shrink-0">
+                  <span className="font-serif text-lg sm:text-2xl md:text-3xl font-extrabold tracking-[0.14em] sm:tracking-[0.16em] text-[#183812] leading-none transition-colors group-hover:text-[#0E250A]">
                     WEAVERA
                   </span>
                   <span className="text-[9px] uppercase tracking-[0.26em] font-bold text-[#3E6830] hidden sm:block mt-0.5">
@@ -276,10 +276,10 @@ export const Navbar: React.FC = () => {
                 )}
               </Link>
 
-              {/* Cart */}
+              {/* Cart - Hidden on mobile screen, accessible via mobile drawer menu */}
               <Link
                 to="/cart"
-                className="relative p-2 text-slate-700 hover:text-slate-950 transition-colors rounded-full hover:bg-slate-100"
+                className="hidden sm:flex relative p-2 text-slate-700 hover:text-slate-950 transition-colors rounded-full hover:bg-slate-100"
                 title="Shopping Bag"
               >
                 <ShoppingBag className="w-5 h-5" />
@@ -290,8 +290,8 @@ export const Navbar: React.FC = () => {
                 )}
               </Link>
 
-              {/* Account Dropdown */}
-              <div className="relative">
+              {/* Account Dropdown - Hidden on mobile screen, accessible via mobile drawer menu */}
+              <div className="hidden sm:block relative">
                 {user ? (
                   <button
                     onClick={() => setUserDropdownOpen(!userDropdownOpen)}

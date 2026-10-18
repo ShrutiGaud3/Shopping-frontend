@@ -9,7 +9,8 @@ import {
   ChevronRight,
   ChevronDown,
   MessageCircle,
-  Sparkles
+  Sparkles,
+  Package
 } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { useSettings } from '../../context/SettingsContext';
@@ -55,15 +56,15 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categor
       <div className="relative w-4/5 max-w-sm bg-white h-full shadow-2xl flex flex-col z-10 overflow-y-auto">
         {/* Drawer Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-          <div className="flex items-center gap-2.5">
-            <div className="p-1 rounded-lg bg-[#BEDAA9]/35 border border-[#BEDAA9] shadow-xs flex items-center justify-center">
+          <div className="flex items-center gap-2.5 shrink-0">
+            <div className="w-9 h-9 shrink-0 rounded-lg bg-[#BEDAA9]/35 border border-[#BEDAA9] shadow-xs flex items-center justify-center p-1">
               <img
                 src="/logo.png"
                 alt="Weavera Logo"
-                className="h-8 w-auto object-contain rounded"
+                className="w-full h-full object-contain rounded shrink-0"
               />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col shrink-0">
               <span className="font-serif text-xl font-extrabold tracking-widest text-[#183812] leading-none">
                 WEAVERA
               </span>
@@ -78,6 +79,24 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categor
             aria-label="Close menu"
           >
             <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        {/* Mobile Quick Action Buttons: Shopping Bag & Track Orders */}
+        <div className="p-3 bg-slate-50 border-b border-slate-100 grid grid-cols-2 gap-2 shrink-0">
+          <button
+            onClick={() => handleNavClick('/cart')}
+            className="flex items-center justify-center gap-2 py-2.5 px-3 bg-[#183812] text-white text-xs font-bold rounded-lg shadow-xs hover:bg-[#0E250A] transition-colors cursor-pointer active:scale-95"
+          >
+            <ShoppingBag className="w-4 h-4 text-[#BEDAA9]" />
+            <span>Bag {totalCartCount > 0 ? `(${totalCartCount})` : ''}</span>
+          </button>
+          <button
+            onClick={() => handleNavClick('/orders')}
+            className="flex items-center justify-center gap-2 py-2.5 px-3 bg-white border border-slate-200 text-slate-800 text-xs font-bold rounded-lg shadow-xs hover:bg-slate-50 transition-colors cursor-pointer active:scale-95"
+          >
+            <Package className="w-4 h-4 text-[#183812]" />
+            <span>My Orders</span>
           </button>
         </div>
 
