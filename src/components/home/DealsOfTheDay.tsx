@@ -37,8 +37,8 @@ export const DealsOfTheDay: React.FC = () => {
               </div>
 
               {/* Red Emblem Brand Badge (Matching Reference Image 1) */}
-              <div className="bg-[#C41E3A] text-white text-[11px] font-bold tracking-widest uppercase px-3 py-1 mb-2 rounded-xs">
-                VELORA
+              <div className="bg-[#183812] text-white text-[11px] font-bold tracking-widest uppercase px-3 py-1 mb-2 rounded-xs">
+                WEAVERA
               </div>
 
               {/* Tag & Subtitle */}

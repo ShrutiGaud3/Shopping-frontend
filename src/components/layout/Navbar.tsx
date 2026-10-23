@@ -91,16 +91,6 @@ export const Navbar: React.FC = () => {
       ]
     },
     {
-      id: 'lehengas',
-      name: 'Lehengas',
-      slug: 'lehengas',
-      children: [
-        { id: 'bridal', name: 'Bridal Lehengas', slug: 'bridal-lehengas', itemCount: 35, image: '' },
-        { id: 'party-wear', name: 'Party Wear Lehengas', slug: 'party-wear-lehengas', itemCount: 40, image: '' },
-        { id: 'velvet', name: 'Velvet Lehengas', slug: 'velvet-lehengas', itemCount: 18, image: '' }
-      ]
-    },
-    {
       id: 'salwar-suits',
       name: 'Salwar Suits',
       slug: 'salwar-suits',
@@ -109,13 +99,39 @@ export const Navbar: React.FC = () => {
         { id: 'straight', name: 'Straight Cut Suits', slug: 'straight-cut-suits', itemCount: 25, image: '' },
         { id: 'sharara', name: 'Sharara & Gharara', slug: 'sharara-gharara', itemCount: 22, image: '' }
       ]
+    },
+    {
+      id: 'lehengas',
+      name: 'Lehengas',
+      slug: 'lehengas',
+      children: [
+        { id: 'bridal', name: 'Bridal Lehengas', slug: 'bridal-lehengas', itemCount: 35, image: '' },
+        { id: 'party-wear', name: 'Party Wear Lehengas', slug: 'party-wear-lehengas', itemCount: 40, image: '' },
+        { id: 'velvet', name: 'Velvet Lehengas', slug: 'velvet-lehengas', itemCount: 18, image: '' }
+      ]
     }
   ];
 
-  // Use dynamic categories directly from database (categoryTree)
-  const displayCategories: Category[] = (categoryTree && categoryTree.length > 0)
+  // Sequence: Saree -> Suit -> Lehenga
+  const getCategoryRank = (name: string, slug?: string): number => {
+    const text = `${name || ''} ${slug || ''}`.toLowerCase();
+    if (text.includes('saree')) return 1;
+    if (text.includes('suit') || text.includes('salwar')) return 2;
+    if (text.includes('lehenga')) return 3;
+    return 10;
+  };
+
+  // Use dynamic categories directly from database (categoryTree) sorted by Saree, Suit, Lehenga
+  const rawCategories = (categoryTree && categoryTree.length > 0)
     ? categoryTree
     : (defaultCategories as Category[]);
+
+  const displayCategories: Category[] = [...rawCategories].sort((a, b) => {
+    const rankA = getCategoryRank(a.name, a.slug);
+    const rankB = getCategoryRank(b.name, b.slug);
+    if (rankA !== rankB) return rankA - rankB;
+    return (a.order || 0) - (b.order || 0);
+  });
 
   return (
     <>
@@ -137,21 +153,19 @@ export const Navbar: React.FC = () => {
 
               <Link
                 to="/"
-                className="flex items-center gap-2 sm:gap-2.5 transition-transform hover:scale-[1.02] group shrink-0"
+                className="flex items-center gap-2.5 sm:gap-3 transition-opacity hover:opacity-95 group shrink-0"
               >
-                <div className="w-9 h-9 sm:w-11 sm:h-11 shrink-0 rounded-xl bg-[#BEDAA9]/35 border border-[#BEDAA9] shadow-xs flex items-center justify-center p-1 sm:p-1.5 transition-all group-hover:border-[#94BC7B] group-hover:bg-[#BEDAA9]/50">
-                  <img
-                    src="/logo.png"
-                    alt="Weavera Logo"
-                    className="w-full h-full object-contain rounded-lg shrink-0"
-                  />
-                </div>
-                <div className="flex flex-col shrink-0">
-                  <span className="font-serif text-lg sm:text-2xl md:text-3xl font-extrabold tracking-[0.14em] sm:tracking-[0.16em] text-[#183812] leading-none transition-colors group-hover:text-[#0E250A]">
+                <img
+                  src="/logo.png"
+                  alt="Weavera Logo"
+                  className="h-9 sm:h-11 w-auto object-contain rounded shrink-0"
+                />
+                <div className="flex flex-col shrink-0 justify-center">
+                  <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.14em] text-[#183812] leading-tight transition-colors group-hover:text-[#0E250A]">
                     WEAVERA
                   </span>
-                  <span className="text-[9px] uppercase tracking-[0.26em] font-bold text-[#3E6830] hidden sm:block mt-0.5">
-                    Surat Ethnic Luxury
+                  <span className="text-[9px] uppercase tracking-[0.18em] font-medium text-[#2E5424] hidden sm:block mt-0.5">
+                    Weaving, Tradition , Wearing Elegance
                   </span>
                 </div>
               </Link>
@@ -401,7 +415,7 @@ export const Navbar: React.FC = () => {
                                 {category.name} Collection
                               </h4>
                               <p className="text-[11px] text-slate-500">
-                                Direct from Surat weavers & craftsmen
+                                Handcrafted by master weavers & artisans
                               </p>
                             </div>
                             <Link

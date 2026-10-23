@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { useShop } from '../context/ShopContext';
 
 export const Register: React.FC = () => {
@@ -13,8 +13,18 @@ export const Register: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const { register } = useShop();
+  const { register, user } = useShop();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+
+  const redirectParam = searchParams.get('redirect');
+  const redirectUrl = redirectParam && redirectParam.startsWith('/') ? redirectParam : '/';
+
+  useEffect(() => {
+    if (user) {
+      navigate(redirectUrl, { replace: true });
+    }
+  }, [user, navigate, redirectUrl]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -35,7 +45,7 @@ export const Register: React.FC = () => {
     setLoading(false);
 
     if (res.success) {
-      navigate('/');
+      navigate(redirectUrl, { replace: true });
     } else {
       setErrorMessage(res.message || 'Registration failed');
     }
@@ -135,7 +145,10 @@ export const Register: React.FC = () => {
 
         <div className="mt-6 pt-6 border-t border-gray-100 text-center text-xs text-gray-600">
           Already registered?{' '}
-          <Link to="/login" className="font-bold text-gray-900 hover:underline">
+          <Link
+            to={redirectParam ? `/login?redirect=${encodeURIComponent(redirectParam)}` : '/login'}
+            className="font-bold text-gray-900 hover:underline"
+          >
             Login here
           </Link>
         </div>

@@ -129,7 +129,7 @@ export const ContactUs: React.FC = () => {
                 <div>
                   <h3 className="font-serif font-bold text-base text-gray-900">Flagship Loom &amp; Office</h3>
                   <p className="text-xs text-gray-600 leading-relaxed mt-1">
-                    {settings.support?.address || 'Ring Road Surat Fashion Hub, Surat, Gujarat - 395002, India'}
+                    {settings.support?.address || 'Weavera Fashion Studio, India'}
                   </p>
                 </div>
               </div>
@@ -185,7 +185,7 @@ export const ContactUs: React.FC = () => {
               </div>
               <h4 className="font-serif text-lg font-bold">100% Genuine Handcrafted Quality</h4>
               <p className="text-xs text-gray-300 leading-relaxed">
-                Our Dedicated Client Care Specialists ensure rapid response times for all inquiries, exchange requests, and custom fittings direct from Surat.
+                Our Dedicated Client Care Specialists ensure rapid response times for all inquiries, exchange requests, and custom fittings direct from our master artisans.
               </p>
             </div>
 

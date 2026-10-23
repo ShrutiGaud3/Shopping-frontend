@@ -25,11 +25,20 @@ export const Checkout: React.FC = () => {
     availableCoupons,
     validateCoupon,
     removeCoupon,
-    shippingZones
+    shippingZones,
+    showToast
   } = useShop();
 
   const { settings } = useSettings();
   const navigate = useNavigate();
+
+  // Enforce customer authentication for checkout
+  useEffect(() => {
+    if (!user) {
+      showToast('Please sign in to proceed with checkout ✨');
+      navigate('/login?redirect=/checkout', { replace: true });
+    }
+  }, [user, navigate]);
 
   const [couponCode, setCouponCode] = useState('');
   const [validating, setValidating] = useState(false);
@@ -131,6 +140,11 @@ export const Checkout: React.FC = () => {
 
   const handleSubmitOrder = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      showToast('Please sign in to place an order ✨');
+      navigate('/login?redirect=/checkout');
+      return;
+    }
     if (cart.length === 0) return;
 
     setSubmitting(true);
@@ -157,6 +171,24 @@ export const Checkout: React.FC = () => {
     }
   };
 
+  if (!user) {
+    return (
+      <div className="py-20 text-center bg-gray-50/50 min-h-[60vh] flex flex-col items-center justify-center">
+        <div className="w-16 h-16 bg-amber-50 rounded-full flex items-center justify-center mb-4 border border-amber-200">
+          <ShieldCheck className="w-8 h-8 text-amber-700" />
+        </div>
+        <h2 className="font-serif text-2xl font-bold text-gray-900 mb-2">Sign In Required</h2>
+        <p className="text-xs text-gray-500 max-w-sm mb-6">Please sign in to your Weavera customer account to complete checkout and place your order.</p>
+        <Link
+          to="/login?redirect=/checkout"
+          className="bg-gray-900 text-white font-semibold text-xs px-8 py-3 uppercase tracking-widest rounded-xs hover:bg-black transition shadow-md"
+        >
+          Sign In to Continue &gt;
+        </Link>
+      </div>
+    );
+  }
+
   if (cart.length === 0) {
     return (
       <div className="py-20 text-center bg-gray-50/50 min-h-[60vh] flex flex-col items-center justify-center">
@@ -164,7 +196,7 @@ export const Checkout: React.FC = () => {
           <Tag className="w-8 h-8 text-amber-700" />
         </div>
         <h2 className="font-serif text-2xl font-bold text-gray-900 mb-2">Your Shopping Bag is Empty</h2>
-        <p className="text-xs text-gray-500 max-w-sm mb-6">Explore our handcrafted Surat sarees, designer lehengas, and festive ethnic wear.</p>
+        <p className="text-xs text-gray-500 max-w-sm mb-6">Explore our handcrafted sarees, designer lehengas, and festive ethnic wear.</p>
         <Link
           to="/products"
           className="bg-gray-900 text-white font-semibold text-xs px-8 py-3 uppercase tracking-widest rounded-xs hover:bg-black transition shadow-md"
@@ -309,7 +341,7 @@ export const Checkout: React.FC = () => {
                   <input
                     type="text"
                     required
-                    placeholder="e.g. Surat"
+                    placeholder="e.g. Mumbai"
                     value={formData.city}
                     onChange={(e) => setFormData({ ...formData, city: e.target.value })}
                     className="w-full bg-gray-50 border border-gray-300 rounded-sm px-3 py-2 text-xs text-gray-900 focus:outline-none focus:border-gray-900 transition"

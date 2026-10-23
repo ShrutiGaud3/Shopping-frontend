@@ -13,11 +13,22 @@ export const Cart: React.FC = () => {
     appliedCoupon,
     availableCoupons,
     validateCoupon,
-    removeCoupon
+    removeCoupon,
+    user,
+    showToast
   } = useShop();
   const navigate = useNavigate();
   const [couponCode, setCouponCode] = useState('');
   const [validating, setValidating] = useState(false);
+
+  const handleProceedToCheckout = () => {
+    if (!user) {
+      showToast('Please sign in to proceed to checkout ✨');
+      navigate('/login?redirect=/checkout');
+    } else {
+      navigate('/checkout');
+    }
+  };
 
   const subtotal = cart.reduce(
     (acc, item) => acc + (item.product.originalPrice + (item.selectedStitchOption?.price || 0)) * item.quantity,
@@ -254,7 +265,7 @@ export const Cart: React.FC = () => {
                                 onClick={async () => {
                                   setCouponCode(codeStr);
                                   setValidating(true);
-                                  await validateCoupon(codeStr, subtotal);
+                                  await validateCoupon(codeStr, cartTotal);
                                   setValidating(false);
                                 }}
                                 className="bg-gray-900 hover:bg-black text-white text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-xs transition-colors cursor-pointer"
@@ -298,7 +309,7 @@ export const Cart: React.FC = () => {
               </div>
 
               <button
-                onClick={() => navigate('/checkout')}
+                onClick={handleProceedToCheckout}
                 className="w-full bg-gray-900 text-white font-semibold text-xs py-3.5 px-4 uppercase tracking-widest flex items-center justify-center gap-2 hover:bg-gray-800 transition-colors shadow-sm rounded-sm cursor-pointer"
               >
                 PROCEED TO CHECKOUT <ArrowRight className="w-4 h-4" />

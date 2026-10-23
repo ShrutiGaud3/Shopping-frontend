@@ -153,7 +153,7 @@ export const BlogPostDetail: React.FC = () => {
               />
               <div>
                 <span className="block font-bold text-gray-900 text-sm">
-                  {post.author?.name || 'SuratiKart Style Team'}
+                  {post.author?.name || 'Weavera Style Team'}
                 </span>
                 <span className="text-xs text-gray-500">
                   {post.author?.role || 'Senior Fashion & Handloom Curator'}
@@ -184,11 +184,11 @@ export const BlogPostDetail: React.FC = () => {
         </header>
 
         {/* Featured Cover Image */}
-        <div className="aspect-[16/9] w-full rounded-2xl overflow-hidden shadow-md mb-10 bg-gray-100 border border-gray-100">
+        <div className="w-full rounded-2xl overflow-hidden shadow-md mb-10 bg-gray-100 border border-gray-100 max-h-[640px] flex items-center justify-center">
           <img
             src={post.coverImage}
             alt={post.title}
-            className="w-full h-full object-cover"
+            className="w-full h-auto max-h-[640px] object-cover object-top"
           />
         </div>
 
@@ -227,7 +227,7 @@ export const BlogPostDetail: React.FC = () => {
               <Sparkles className="w-4 h-4 text-emerald-600" /> Inspired by this craft?
             </div>
             <h3 className="font-serif text-xl sm:text-2xl font-bold text-gray-900">
-              Speak with a Surat Ethnic Stylist
+              Speak with a Weavera Ethnic Stylist
             </h3>
             <p className="text-xs sm:text-sm text-gray-600 mt-1 max-w-lg">
               Have questions about fabric weight, blouse unstitched allowance, or matching jewelry? Our in-house stylists are available on WhatsApp for complimentary video styling.

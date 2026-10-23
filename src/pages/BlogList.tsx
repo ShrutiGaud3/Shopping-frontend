@@ -72,10 +72,10 @@ export const BlogList: React.FC = () => {
             <Sparkles className="w-3.5 h-3.5" /> Handloom Heritage &amp; Couture
           </div>
           <h1 className="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-gray-900 tracking-tight leading-tight">
-            SuratiKart Style Stories
+            Weavera Style Stories
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 mt-3 leading-relaxed">
-            Curated style guides, master weaver craft diaries, and festive ethnic runway inspirations directly from the textile capital of Surat.
+            Curated style guides, master weaver craft diaries, and festive ethnic runway inspirations.
           </p>
         </div>
 
@@ -83,7 +83,7 @@ export const BlogList: React.FC = () => {
         <div className="bg-white p-4 rounded-xl border border-gray-200/80 shadow-xs mb-8 flex flex-col md:flex-row items-center justify-between gap-4">
           {/* Tag Filter Chips */}
           <div className="flex items-center gap-2 overflow-x-auto w-full md:w-auto pb-1 md:pb-0 no-scrollbar">
-            {(tags.length > 0 ? tags : ['All', 'Surat Silk', 'Saree Guide', 'Bridal Lehenga', 'Festive Styling']).map((t) => (
+            {(tags.length > 0 ? tags : ['All', 'Heritage Silk', 'Saree Guide', 'Bridal Lehenga', 'Festive Styling']).map((t) => (
               <button
                 key={t}
                 onClick={() => setSelectedTag(t)}
@@ -134,7 +134,7 @@ export const BlogList: React.FC = () => {
                     <img
                       src={featuredPost.coverImage}
                       alt={featuredPost.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
                     />
                     <div className="absolute top-4 left-4">
                       <span className="bg-white/90 backdrop-blur-xs text-gray-900 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider shadow-xs">
@@ -224,7 +224,7 @@ export const BlogList: React.FC = () => {
                         <img
                           src={post.coverImage}
                           alt={post.title}
-                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                          className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-300"
                         />
                         <span className="absolute top-3 left-3 bg-white/90 backdrop-blur-xs text-gray-900 text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs">
                           {post.category}
@@ -258,7 +258,7 @@ export const BlogList: React.FC = () => {
 
                         <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between">
                           <span className="text-[11px] font-semibold text-gray-700">
-                            By {post.author?.name || 'SuratiKart Style Team'}
+                            By {post.author?.name || 'Weavera Style Team'}
                           </span>
 
                           <Link
@@ -287,14 +287,14 @@ export const BlogList: React.FC = () => {
               Need personalized sizing or bridal fabric advice?
             </h3>
             <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed mb-6">
-              Connect directly with our master Surat weavers and fashion stylists on WhatsApp for instant video consultation, loom swatches, and custom stitching queries.
+              Connect directly with our master weavers and fashion stylists on WhatsApp for instant video consultation, loom swatches, and custom stitching queries.
             </p>
             <button
               onClick={() => openWhatsAppSupport('Hello Weavera Stylist Team! 👋 I am reading your style stories and would love guidance on choosing the right ethnic fabric and fit.')}
               className="bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-lg transition-all shadow-md cursor-pointer inline-flex items-center gap-2"
             >
               <MessageCircle className="w-4 h-4 fill-emerald-950 text-emerald-400" />
-              Chat with a Surat Stylist on WhatsApp
+              Chat with a Weavera Stylist on WhatsApp
             </button>
           </div>
         </div>

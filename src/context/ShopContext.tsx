@@ -48,7 +48,6 @@ import {
   fetchAllOrdersAdminThunk,
   updateOrderStatusThunk,
   requestExchangeThunk,
-  addOrderLocal,
   updateOrderStatusLocal
 } from '../store/slices/orderSlice';
 import { shippingZoneService } from '../services/shippingZoneService';
@@ -350,12 +349,6 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
     paymentMethod: Order['paymentMethod'],
     onlinePaymentDetails?: { paymentId?: string; razorpayOrderId?: string; signature?: string }
   ): Promise<Order> => {
-    const totalAmount = cart.reduce((acc, item) => acc + (item.product.price + (item.selectedStitchOption?.price || 0)) * item.quantity, 0);
-    const originalTotal = cart.reduce(
-      (acc, item) => acc + item.product.originalPrice * item.quantity,
-      0
-    );
-
     const orderPayload = {
       items: cart.map((i) => ({
         product: i.product.id || (i.product as any)._id,
@@ -385,38 +378,40 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
       paymentSignature: onlinePaymentDetails?.signature || ''
     };
 
-    let createdOrder: Order | null = null;
-
-    try {
-      const res = await dispatch(createOrderThunk(orderPayload));
-      if (createOrderThunk.fulfilled.match(res)) {
-        createdOrder = res.payload;
-        if (user && user.role === 'admin') {
-          dispatch(fetchAllOrdersAdminThunk());
-        } else if (user) {
-          dispatch(fetchMyOrdersThunk());
-        }
-      }
-    } catch (err) {
-      // Fallback local if API fails
+    if (!user) {
+      showToast('Please sign in to complete your order ✨');
+      throw new Error('Authentication required: Please sign in to place an order.');
     }
 
-    if (!createdOrder) {
-      createdOrder = {
-        id: `ORD-${Math.floor(1000 + Math.random() * 9000)}-${Math.floor(1000 + Math.random() * 9000)}`,
-        date: new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }),
-        customerName: user ? user.name : shippingAddress.fullName || 'Customer',
-        customerEmail: user ? user.email : 'customer@example.com',
-        customerPhone: shippingAddress.phone || user?.phone || '',
-        items: [...cart],
-        totalAmount: Math.max(0, totalAmount - (appliedCoupon?.discount || 0) + (totalAmount > 999 ? 0 : 99)),
-        discountAmount: originalTotal - totalAmount + (appliedCoupon?.discount || 0),
-        shippingFee: totalAmount > 999 ? 0 : 99,
-        status: 'Confirmed',
-        paymentMethod,
-        shippingAddress
-      };
-      dispatch(addOrderLocal(createdOrder));
+    // Verify coupon single use per customer before dispatching order
+    if (appliedCoupon?.code) {
+      const upperCode = appliedCoupon.code.trim().toUpperCase();
+      const alreadyUsed = orders.some(
+        (o: any) =>
+          (o.couponCode && o.couponCode.trim().toUpperCase() === upperCode) ||
+          (o.coupon && o.coupon.trim().toUpperCase() === upperCode)
+      );
+      if (alreadyUsed) {
+        const errorMsg = `You have already redeemed coupon '${upperCode}' on a previous order. Each coupon can only be used once.`;
+        showToast(errorMsg);
+        throw new Error(errorMsg);
+      }
+    }
+
+    let createdOrder: Order | null = null;
+
+    const res = await dispatch(createOrderThunk(orderPayload));
+    if (createOrderThunk.fulfilled.match(res)) {
+      createdOrder = res.payload;
+      if (user && user.role === 'admin') {
+        dispatch(fetchAllOrdersAdminThunk());
+      } else if (user) {
+        dispatch(fetchMyOrdersThunk());
+      }
+    } else {
+      const errMsg = (res.payload as string) || 'Failed to place order. Please try again.';
+      showToast(errMsg);
+      throw new Error(errMsg);
     }
 
     if (user && token) {

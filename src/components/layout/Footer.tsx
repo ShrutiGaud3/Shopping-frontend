@@ -32,7 +32,20 @@ export const Footer: React.FC = () => {
             setDbPages(pagesRes.data.filter((p) => p.isActive !== false));
           }
           if (catsRes.success && catsRes.data && catsRes.data.length > 0) {
-            setDbCategories(catsRes.data.filter((c: Category) => c.showInMenu !== false));
+            const sorted = [...catsRes.data.filter((c: Category) => c.showInMenu !== false)].sort((a, b) => {
+              const getRank = (name: string, slug?: string) => {
+                const text = `${name || ''} ${slug || ''}`.toLowerCase();
+                if (text.includes('saree')) return 1;
+                if (text.includes('suit') || text.includes('salwar')) return 2;
+                if (text.includes('lehenga')) return 3;
+                return 10;
+              };
+              const rA = getRank(a.name, a.slug);
+              const rB = getRank(b.name, b.slug);
+              if (rA !== rB) return rA - rB;
+              return (a.order || 0) - (b.order || 0);
+            });
+            setDbCategories(sorted);
           }
         }
       } catch (e) {
@@ -76,19 +89,17 @@ export const Footer: React.FC = () => {
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8 md:mb-12 border-b border-[#A3C68C] pb-6 md:pb-8">
           <div className="w-full sm:w-auto">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 sm:w-14 sm:h-14 shrink-0 rounded-xl bg-white/80 backdrop-blur-xs border border-white/90 shadow-xs flex items-center justify-center p-1 sm:p-1.5">
-                <img
-                  src="/logo.png"
-                  alt="Weavera Logo"
-                  className="w-full h-full object-contain rounded-lg shrink-0"
-                />
-              </div>
+              <img
+                src="/logo.png"
+                alt="Weavera Logo"
+                className="h-12 sm:h-14 w-auto object-contain rounded shrink-0"
+              />
               <div className="min-w-0 flex-1">
-                <span className="font-serif text-xl sm:text-3xl md:text-4xl font-extrabold tracking-widest text-[#183812] block leading-none">
+                <span className="font-serif text-2xl sm:text-3xl font-bold tracking-widest text-[#183812] block leading-none">
                   WEAVERA
                 </span>
-                <p className="text-[11px] sm:text-xs text-[#284C1E] mt-1 font-semibold tracking-wider">
-                  Handcrafted Sarees, Bridal Lehengas &amp; Salwar Suits Direct from Surat
+                <p className="text-[11px] sm:text-xs text-[#284C1E] mt-1 font-medium tracking-wide">
+                  Weaving, Tradition , Wearing Elegance
                 </p>
               </div>
             </div>
@@ -130,8 +141,8 @@ export const Footer: React.FC = () => {
               ) : (
                 <>
                   <li><Link to="/products?category=Sarees" className="hover:text-[#0E250A] font-semibold transition-colors">Silk &amp; Designer Sarees</Link></li>
-                  <li><Link to="/products?category=Lehengas" className="hover:text-[#0E250A] font-semibold transition-colors">Bridal &amp; Celebration Lehengas</Link></li>
                   <li><Link to="/products?category=Salwar%20Suits" className="hover:text-[#0E250A] font-semibold transition-colors">Festive &amp; Anarkali Salwar Suits</Link></li>
+                  <li><Link to="/products?category=Lehengas" className="hover:text-[#0E250A] font-semibold transition-colors">Bridal &amp; Celebration Lehengas</Link></li>
                 </>
               )}
             </ul>
@@ -202,7 +213,7 @@ export const Footer: React.FC = () => {
             <div className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['contact'] ? 'block' : 'hidden md:block'}`}>
               <div className="flex items-start gap-2">
                 <MapPin className="w-4 h-4 text-[#8B1D2C] shrink-0 mt-0.5" />
-                <span>{settings.support?.address || 'Ring Road Textile Market, Surat, Gujarat - 395002'}</span>
+                <span>{settings.support?.address || 'Weavera Fashion Studio, India'}</span>
               </div>
               <div className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-[#183812] shrink-0" />
@@ -232,7 +243,7 @@ export const Footer: React.FC = () => {
               Festive Club
             </h4>
             <p className="text-[#284C1E] mb-4 text-xs font-medium leading-relaxed">
-              Subscribe to get exclusive Surat manufacturer prices, festival drop previews &amp; VIP discount codes.
+              Subscribe to get exclusive manufacturer prices, festival drop previews &amp; VIP discount codes.
             </p>
             <form onSubmit={handleSubscribe} className="relative max-w-sm mb-4">
               <input

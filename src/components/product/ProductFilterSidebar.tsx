@@ -223,7 +223,7 @@ export const ProductFilterSidebar: React.FC<ProductFilterSidebarProps> = ({
         )}
       </div>
 
-      {/* Fabric Filter Accordion (Surat Loom Specialization) */}
+      {/* Fabric Filter Accordion (Handloom Specialization) */}
       <div className="mb-4 pb-4 border-b border-gray-200">
         <button
           onClick={() => toggleSection('fabric')}

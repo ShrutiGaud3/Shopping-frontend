@@ -26,7 +26,7 @@ export const PromoStrip: React.FC = () => {
 
   const defaultItems = [
     { text: 'FREE EXPRESS SHIPPING ON ORDERS ABOVE ₹999', icon: 'truck', link: '/products' },
-    { text: 'GENUINE SURAT TEXTILE DIRECT MANUFACTURING PRICES', icon: 'sparkles', link: '/products' },
+    { text: 'GENUINE HANDLOOM DIRECT MANUFACTURING PRICES', icon: 'sparkles', link: '/products' },
     { text: 'EASY 7-DAY DOORSTEP RETURNS & REPLACEMENTS', icon: 'rotate', link: '/pages/return-policy' },
     { text: 'ORDER DIRECTLY ON WHATSAPP FOR INSTANT DISPATCH', icon: 'shield', link: '' }
   ];

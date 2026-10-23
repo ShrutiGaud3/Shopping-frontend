@@ -10,7 +10,7 @@ export const WholesaleCampaignBanner: React.FC = () => {
         <img
           src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1800&q=80"
           alt="Weavera Global Wholesale & Bridal Program"
-          className="w-full h-full object-cover object-center scale-100 hover:scale-102 transition-transform duration-1000 ease-out"
+          className="w-full h-full object-cover object-top scale-100 hover:scale-102 transition-transform duration-1000 ease-out"
           loading="lazy"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/30 sm:bg-gradient-to-r sm:from-black/25 sm:via-black/65 sm:to-black/95" />
@@ -44,7 +44,7 @@ export const WholesaleCampaignBanner: React.FC = () => {
 
           {/* Description & USPs */}
           <p className="text-xs sm:text-sm text-slate-200 font-normal mb-6 max-w-lg leading-relaxed text-center sm:text-right drop-shadow-sm">
-            Source authentic handcrafted sarees, bridal lehengas &amp; designer salwar suits direct from Surat master looms with wholesale pricing, worldwide express shipping &amp; custom tailor finishing.
+            Source authentic handcrafted sarees, bridal lehengas &amp; designer salwar suits direct from master looms with wholesale pricing, worldwide express shipping &amp; custom tailor finishing.
           </p>
 
           {/* Feature Pills */}

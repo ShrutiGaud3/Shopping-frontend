@@ -214,7 +214,7 @@ export const StaticPage: React.FC = () => {
                 Still have questions or need sizing assistance?
               </h3>
               <p className="text-xs text-slate-500 mt-0.5">
-                Our Surat ethnic fashion stylists are available on WhatsApp for instant video consultation and sizing guidance.
+                Our ethnic fashion stylists are available on WhatsApp for instant video consultation and sizing guidance.
               </p>
             </div>
             <button

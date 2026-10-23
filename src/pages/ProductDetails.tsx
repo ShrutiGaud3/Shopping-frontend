@@ -34,7 +34,7 @@ import type { RootState } from '../store';
 export const ProductDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { products, addToCart, toggleWishlist, isInWishlist } = useShop();
+  const { products, addToCart, toggleWishlist, isInWishlist, showToast } = useShop();
   const { settings } = useSettings();
   const { user } = useSelector((state: RootState) => state.auth);
 
@@ -167,7 +167,12 @@ export const ProductDetails: React.FC = () => {
 
   const handleBuyNow = () => {
     addToCart(product, selectedSize, selectedColor, 1, selectedStitchOption || undefined);
-    navigate('/cart');
+    if (!user) {
+      showToast('Please sign in to proceed with your order ✨');
+      navigate('/login?redirect=/checkout');
+    } else {
+      navigate('/checkout');
+    }
   };
 
   const handleCheckPincode = (e: React.FormEvent) => {
@@ -386,7 +391,7 @@ export const ProductDetails: React.FC = () => {
               <div className="text-[11px] text-gray-500 mb-4 flex items-center gap-1.5">
                 <span className="text-emerald-700 font-semibold">Inclusive of all taxes</span>
                 <span>•</span>
-                <span>Direct Surat Loom Pricing</span>
+                <span>Direct Loom Pricing</span>
               </div>
 
               {/* Product Overview / Description Box */}
@@ -455,7 +460,7 @@ export const ProductDetails: React.FC = () => {
                 </div>
               </div>
 
-              {/* Stitching / Customization Option (Surat Specialist) */}
+              {/* Stitching / Customization Option (Master Tailor) */}
               {product.stitchOptions && product.stitchOptions.length > 0 && (
                 <div className="mb-6 bg-gradient-to-br from-amber-50/70 to-orange-50/40 p-4 rounded-sm border border-amber-200">
                   <div className="flex items-center justify-between mb-2.5">
@@ -464,7 +469,7 @@ export const ProductDetails: React.FC = () => {
                       <span>Select Stitching / Customization</span>
                     </div>
                     <span className="text-[10px] font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded-xs">
-                      Surat Master Tailoring
+                      Master Handloom Tailoring
                     </span>
                   </div>
                   <div className="space-y-2">
@@ -510,11 +515,11 @@ export const ProductDetails: React.FC = () => {
                 </div>
               )}
 
-              {/* Surat Direct Weaver Trust Strip */}
+              {/* Direct Weaver Trust Strip */}
               <div className="grid grid-cols-2 gap-2 mb-6 p-3 bg-slate-50 border border-slate-200 rounded-sm text-[11px] text-slate-700">
                 <div className="flex items-center gap-2">
                   <span className="w-5 h-5 rounded-full bg-amber-100 text-amber-800 flex items-center justify-center shrink-0 text-[10px] font-bold">🏭</span>
-                  <span><strong>Surat Loom Rate:</strong> Zero retail markups</span>
+                  <span><strong>Loom Direct Rate:</strong> Zero retail markups</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -679,17 +684,17 @@ export const ProductDetails: React.FC = () => {
                   <div className="flex items-center justify-between pb-3 mb-4 border-b border-amber-200/80">
                     <div className="flex items-center gap-2">
                       <Sparkles className="w-4 h-4 text-amber-700" />
-                      <span className="font-serif font-bold text-sm text-gray-900">Surat Ethnic Craft Details</span>
+                      <span className="font-serif font-bold text-sm text-gray-900">Artisan Ethnic Craft Details</span>
                     </div>
                     <span className="text-[11px] font-semibold text-amber-800 bg-amber-100/80 px-2 py-0.5 rounded-xs border border-amber-300">
-                      Authentic Surat Loom
+                      Authentic Handloom Weave
                     </span>
                   </div>
 
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-3.5 gap-x-6 text-xs text-gray-700">
                     <div>
                       <span className="text-gray-400 block font-medium">Fabric / Weave</span>
-                      <span className="font-semibold text-gray-900">{product.fabric || product.specifications?.fabric || 'Pure Surat Handloom Silk'}</span>
+                      <span className="font-semibold text-gray-900">{product.fabric || product.specifications?.fabric || 'Pure Handloom Silk'}</span>
                     </div>
                     <div>
                       <span className="text-gray-400 block font-medium">Work / Craftsmanship</span>
@@ -725,7 +730,7 @@ export const ProductDetails: React.FC = () => {
                     </div>
                     <div>
                       <span className="text-gray-400 block font-medium">Manufacturing Origin</span>
-                      <span className="font-semibold text-gray-900">Surat, Gujarat (Textile Capital of India)</span>
+                      <span className="font-semibold text-gray-900">India (Handcrafted Heritage)</span>
                     </div>
                     <div>
                       <span className="text-gray-400 block font-medium">COD Availability</span>

@@ -34,7 +34,7 @@ export const TrustBadges: React.FC = () => {
   const defaultBadges: Partial<TrustBadgeItem>[] = [
     {
       id: 'default-1',
-      title: 'Surat Direct Prices',
+      title: 'Loom Direct Prices',
       subtitle: 'Wholesale factory rates with zero middlemen markups',
       icon: 'sparkles'
     },

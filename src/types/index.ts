@@ -57,7 +57,7 @@ export interface Product {
   stock?: number;
   sku?: string;
 
-  // Surat Ethnic Wear Fields
+  // Ethnic Wear Fields
   fabric?: string;
   work?: string;
   occasion?: string;

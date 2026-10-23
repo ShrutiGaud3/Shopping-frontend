@@ -57,7 +57,7 @@ export const TrendingOffers: React.FC = () => {
             <img
               src="https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=800&q=80"
               alt="Bridal Lehenga Offer"
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/20 to-transparent flex flex-col justify-end p-6 text-white text-left">
               <span className="text-[11px] uppercase tracking-[0.2em] font-semibold mb-1 text-rose-200">
@@ -98,7 +98,7 @@ export const TrendingOffers: React.FC = () => {
               <img
                 src="https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=800&q=80"
                 alt="Pure Silk Sarees"
-                className="w-full h-full object-cover hover:scale-105 transition-transform duration-700"
+                className="w-full h-full object-cover object-top hover:scale-105 transition-transform duration-700"
               />
             </div>
           </div>

@@ -29,7 +29,7 @@ export const TrendingSection: React.FC = () => {
               TRENDING RIGHT NOW
             </h2>
             <p className="text-xs sm:text-sm text-slate-500 mt-1 max-w-xl">
-              Celebrity drapes, bridal favorites &amp; viral festive hits flying off our Surat looms
+              Celebrity drapes, bridal favorites &amp; viral festive hits flying off our artisan looms
             </p>
           </div>
 

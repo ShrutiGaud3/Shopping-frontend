@@ -56,19 +56,17 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categor
         {/* Drawer Header */}
         <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
           <div className="flex items-center gap-2.5 shrink-0">
-            <div className="w-9 h-9 shrink-0 rounded-lg bg-[#BEDAA9]/35 border border-[#BEDAA9] shadow-xs flex items-center justify-center p-1">
-              <img
-                src="/logo.png"
-                alt="Weavera Logo"
-                className="w-full h-full object-contain rounded shrink-0"
-              />
-            </div>
+            <img
+              src="/logo.png"
+              alt="Weavera Logo"
+              className="h-9 w-auto object-contain rounded shrink-0"
+            />
             <div className="flex flex-col shrink-0">
-              <span className="font-serif text-xl font-extrabold tracking-widest text-[#183812] leading-none">
+              <span className="font-serif text-lg font-bold tracking-widest text-[#183812] leading-none">
                 WEAVERA
               </span>
-              <span className="text-[8px] uppercase tracking-widest font-bold text-[#3E6830] mt-0.5">
-                Surat Ethnic Luxury
+              <span className="text-[8px] uppercase tracking-wider font-medium text-[#2E5424] mt-0.5">
+                Weaving, Tradition , Wearing Elegance
               </span>
             </div>
           </div>
@@ -112,13 +110,25 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categor
             <p className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
               Ethnic Collections
             </p>
-            <span className="text-[10px] text-rose-600 font-semibold bg-rose-50 px-2 py-0.5 rounded-full">
-              Surat Direct
+            <span className="text-[10px] text-emerald-800 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">
+              Loom Direct
             </span>
           </div>
 
           <div className="space-y-1">
-            {categoryTree.map((cat) => {
+            {[...categoryTree].sort((a, b) => {
+              const getRank = (name: string, slug?: string) => {
+                const text = `${name || ''} ${slug || ''}`.toLowerCase();
+                if (text.includes('saree')) return 1;
+                if (text.includes('suit') || text.includes('salwar')) return 2;
+                if (text.includes('lehenga')) return 3;
+                return 10;
+              };
+              const rA = getRank(a.name, a.slug);
+              const rB = getRank(b.name, b.slug);
+              if (rA !== rB) return rA - rB;
+              return (a.order || 0) - (b.order || 0);
+            }).map((cat) => {
               const hasChildren = cat.children && cat.children.length > 0;
               const isExpanded = !!expandedCategories[cat.id];
 

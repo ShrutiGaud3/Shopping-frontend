@@ -26,7 +26,7 @@ const defaultSettings: Setting = {
   support: {
     phone: '+91 98765 43210',
     email: 'support@weavera.in',
-    address: 'Ring Road Textile Market, Surat, Gujarat - 395002'
+    address: 'Weavera Fashion Studio, India'
   },
   workingHours: {
     days: 'Monday - Saturday',
@@ -43,8 +43,8 @@ const defaultSettings: Setting = {
   },
   branding: {
     storeName: 'Weavera',
-    tagline: "India's Finest Ethnic & Festive Fashion Direct from Surat",
-    footerText: '© 2026 Weavera Ethnic Fashion Inc. Crafted with passion in Surat.',
+    tagline: "Weaving, Tradition , Wearing Elegance",
+    footerText: '© 2026 Weavera Ethnic Fashion Inc. All rights reserved.',
     socialLinks: {
       instagram: 'https://instagram.com',
       facebook: 'https://facebook.com',
@@ -54,7 +54,7 @@ const defaultSettings: Setting = {
   },
   seo: {
     metaTitle: 'Weavera | Authentic Ethnic Wear, Sarees, Lehengas & Salwar Suits',
-    metaDescription: 'Shop exquisite Indian ethnic wear directly from Surat manufacturers.'
+    metaDescription: 'Shop exquisite Indian ethnic wear - sarees, lehengas, and salwar suits.'
   }
 };
 

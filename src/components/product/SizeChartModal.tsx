@@ -107,7 +107,7 @@ export const SizeChartModal: React.FC<SizeChartModalProps> = ({
                 WEAVERA Size &amp; Measurement Guide
               </h2>
               <p className="text-[11px] text-slate-300">
-                Official tailoring &amp; draping dimensions for authentic Surat ethnic wear
+                Official tailoring &amp; draping dimensions for authentic ethnic wear
               </p>
             </div>
           </div>

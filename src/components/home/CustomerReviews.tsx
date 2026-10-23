@@ -10,7 +10,7 @@ const DEFAULT_REVIEWS = [
     avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80',
     rating: 5,
     date: '12 February 2026',
-    comment: 'The Banarasi Katan Silk saree from Surat exceeded my expectations! The zari weave is genuine gold finish, and the drape is pure royal perfection.',
+    comment: 'The Banarasi Katan Silk saree from Weavera exceeded my expectations! The zari weave is genuine gold finish, and the drape is pure royal perfection.',
     productName: "Pure Banarasi Katan Silk Saree"
   },
   {
@@ -26,11 +26,11 @@ const DEFAULT_REVIEWS = [
   {
     id: 'rev-3',
     name: 'Kavya Patel',
-    location: 'Surat, Gujarat',
+    location: 'Ahmedabad, Gujarat',
     avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=200&q=80',
     rating: 5,
     date: '04 February 2026',
-    comment: 'Direct Surat manufacturing pricing with express delivery! The Georgette Anarkali suit fabric feels luxurious and came with immaculate finishing.',
+    comment: 'Direct loom manufacturing pricing with express delivery! The Georgette Anarkali suit fabric feels luxurious and came with immaculate finishing.',
     productName: "Embroidered Georgette Anarkali Set"
   }
 ];

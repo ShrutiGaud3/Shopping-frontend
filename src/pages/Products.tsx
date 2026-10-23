@@ -101,7 +101,7 @@ export const Products: React.FC = () => {
       return false;
     }
 
-    // 9. Fabric Filter (Surat Specialization)
+    // 9. Fabric Filter (Handloom Specialization)
     if (filterState.fabrics && filterState.fabrics.length > 0) {
       const matchFabric = filterState.fabrics.some((f) => {
         const prodFabric = (product.fabric || product.specifications?.fabric || '').toLowerCase();
@@ -110,7 +110,7 @@ export const Products: React.FC = () => {
       if (!matchFabric) return false;
     }
 
-    // 10. Occasion Filter (Surat Specialization)
+    // 10. Occasion Filter (Festive Specialization)
     if (filterState.occasions && filterState.occasions.length > 0) {
       const matchOccasion = filterState.occasions.some((o) => {
         const prodOccasion = (product.occasion || product.specifications?.occasion || '').toLowerCase();

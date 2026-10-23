@@ -65,7 +65,7 @@ export const BestsellingCategories: React.FC = () => {
               <img
                 src={cat.image}
                 alt={`${cat.tag} ${cat.title}`}
-                className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+                className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108"
                 loading="lazy"
               />
 

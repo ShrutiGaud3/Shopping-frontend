@@ -34,7 +34,7 @@ const DEFAULT_COUPONS: CouponData[] = [
   },
   {
     _id: 'c1',
-    code: 'SURATFESTIVE',
+    code: 'WEAVERAFESTIVE',
     type: 'percent',
     discountType: 'percentage',
     value: 15,

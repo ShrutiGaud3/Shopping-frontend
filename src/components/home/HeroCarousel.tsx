@@ -4,8 +4,67 @@ import { ChevronLeft, ChevronRight, Sparkles, ArrowRight } from 'lucide-react';
 import { bannerService } from '../../services/bannerService';
 import type { BannerItem } from '../../types';
 
+const CACHE_KEY = 'weavera_cached_hero_banners';
+
+// Active Weavera ethnic wear slides matching the MongoDB Atlas database catalog
+const defaultSlides: Partial<BannerItem>[] = [
+  {
+    id: 'default-1',
+    title: 'ROYAL HERITAGE SILK SAREES',
+    subtitle: 'Direct from master weavers. Pure Zari Banarasi & Kanjivaram masterpieces.',
+    badge: 'FESTIVE EDIT 2026',
+    desktopImage: 'https://weaverstory.com/cdn/shop/articles/From_Runway_to_Realway__Sonam_Bajwa_s_Red_Banarasi_Saree_Look_by_WeaverStory_Cover.png?v=1677233233',
+    mobileImage: 'https://cdn.shopify.com/s/files/1/0728/2350/5141/files/marriage_wedding_silk_sarees_collection_-_Vandana_Sarees.jpg?v=1755116749',
+    ctaText: 'Shop Sarees',
+    ctaLink: '/products?category=Sarees',
+    textColor: 'light',
+    alignment: 'left',
+    order: 1
+  },
+  {
+    id: 'default-2',
+    title: 'BRIDAL & CELEBRATION LEHENGAS',
+    subtitle: 'Intricate handcrafted zardozi, sequins & velvet silhouettes for your special day.',
+    badge: 'WEDDING COUTURE',
+    desktopImage: 'https://shoproohani.com/cdn/shop/files/emerald-green-floral-lehenga-9459708.jpg?v=1778466311&width=1946',
+    mobileImage: 'https://kundansbridalcouture.com/cdn/shop/files/Full-length_front_view_of_a_model_in_a_red_bridal_lehenga.png?v=1778623209&width=1000',
+    ctaText: 'Explore Lehengas',
+    ctaLink: '/products?category=Lehengas',
+    textColor: 'light',
+    alignment: 'left',
+    order: 2
+  },
+  {
+    id: 'default-3',
+    title: 'READY-TO-WEAR SUITS & ANARKALIS',
+    subtitle: 'Breezy georgettes, flared anarkalis & festive shararas with designer dupatta.',
+    badge: 'NEW ARRIVALS',
+    desktopImage: 'https://varnikalifestyle.in/cdn/shop/files/kurti-collection-hero-banner-resize.png?v=1784366983&width=3840',
+    mobileImage: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS_dFyTOYm3DN9pm7eESnB_cu5oDgsM-FxlmHyaiq0_eFj8NCfWU9z5T9i-&s=10',
+    ctaText: 'Discover Suits',
+    ctaLink: '/products?category=Salwar%20Suits',
+    textColor: 'light',
+    alignment: 'center',
+    order: 3
+  }
+];
+
+const getInitialBanners = (): BannerItem[] => {
+  if (typeof window === 'undefined') return defaultSlides as BannerItem[];
+  try {
+    const cached = localStorage.getItem(CACHE_KEY);
+    if (cached) {
+      const parsed = JSON.parse(cached);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch (_) {}
+  return defaultSlides as BannerItem[];
+};
+
 export const HeroCarousel: React.FC = () => {
-  const [banners, setBanners] = useState<BannerItem[]>([]);
+  const [banners, setBanners] = useState<BannerItem[]>(getInitialBanners);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
 
@@ -15,7 +74,11 @@ export const HeroCarousel: React.FC = () => {
       try {
         const res = await bannerService.getBanners();
         if (isMounted && res.success && res.data && res.data.length > 0) {
-          setBanners(res.data);
+          const sorted = [...res.data].sort((a, b) => (a.order || 0) - (b.order || 0));
+          setBanners(sorted);
+          try {
+            localStorage.setItem(CACHE_KEY, JSON.stringify(sorted));
+          } catch (_) {}
         }
       } catch (err) {
         console.warn('Failed to fetch hero banners:', err);
@@ -26,43 +89,6 @@ export const HeroCarousel: React.FC = () => {
       isMounted = false;
     };
   }, []);
-
-  // Fallback ethnic wear slides if DB empty
-  const defaultSlides: Partial<BannerItem>[] = [
-    {
-      id: 'default-1',
-      title: 'ROYAL SURAT SILK SAREES',
-      subtitle: 'Direct from master weavers in Surat. Pure Zari Banarasi & Kanjivaram masterpieces.',
-      badge: 'FESTIVE EDIT 2026',
-      desktopImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1920&q=80',
-      ctaText: 'Shop Sarees',
-      ctaLink: '/products?category=Sarees',
-      textColor: 'light',
-      alignment: 'left'
-    },
-    {
-      id: 'default-2',
-      title: 'BRIDAL & CELEBRATION LEHENGAS',
-      subtitle: 'Intricate handcrafted zardozi, sequins & velvet silhouettes for your special day.',
-      badge: 'WEDDING COUTURE',
-      desktopImage: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1920&q=80',
-      ctaText: 'Explore Lehengas',
-      ctaLink: '/products?category=Lehengas',
-      textColor: 'light',
-      alignment: 'left'
-    },
-    {
-      id: 'default-3',
-      title: 'READY-TO-WEAR SUITS & ANARKALIS',
-      subtitle: 'Breezy georgettes, flared anarkalis & festive shararas with designer dupatta.',
-      badge: 'NEW ARRIVALS',
-      desktopImage: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=1920&q=80',
-      ctaText: 'Discover Suits',
-      ctaLink: '/products?category=Salwar%20Suits',
-      textColor: 'light',
-      alignment: 'center'
-    }
-  ];
 
   const slides = (banners && banners.length > 0 ? banners : defaultSlides) as BannerItem[];
 
@@ -96,19 +122,23 @@ export const HeroCarousel: React.FC = () => {
         {/* Mobile Device Banner Image (< 768px md) */}
         {slide.mobileImage ? (
           <img
-            key={`mobile-${slide.id || slide._id || currentSlide}`}
+            key={`mobile-${slide.id || (slide as any)._id || currentSlide}`}
             src={slide.mobileImage}
             alt={slide.title}
-            className="block md:hidden w-full h-full object-cover object-center transition-all duration-1000 ease-out transform scale-100 group-hover:scale-102"
+            loading="eager"
+            fetchPriority="high"
+            className="block md:hidden w-full h-full object-cover object-top transition-all duration-1000 ease-out transform scale-100 group-hover:scale-102"
           />
         ) : null}
 
         {/* Desktop / Large Screen Banner Image (>= 768px md) */}
         <img
-          key={`desktop-${slide.id || slide._id || currentSlide}`}
+          key={`desktop-${slide.id || (slide as any)._id || currentSlide}`}
           src={slide.desktopImage}
           alt={slide.title}
-          className={`${slide.mobileImage ? 'hidden md:block' : 'block'} w-full h-full object-cover object-center transition-all duration-1000 ease-out transform scale-100 group-hover:scale-102`}
+          loading="eager"
+          fetchPriority="high"
+          className={`${slide.mobileImage ? 'hidden md:block' : 'block'} w-full h-full object-cover object-top transition-all duration-1000 ease-out transform scale-100 group-hover:scale-102`}
         />
 
         {/* Dynamic Gradient Overlays for High Legibility */}

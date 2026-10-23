@@ -388,7 +388,7 @@ export const OrderDetailsModal: React.FC<OrderDetailsModalProps> = ({ order, isO
         {/* Modal Footer */}
         <div className="bg-gray-50 border-t border-gray-200 px-4 sm:px-6 py-3 flex items-center justify-between">
           <span className="text-[11px] text-gray-500 flex items-center gap-1">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> 100% Genuine Handcrafted Surat Couture
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" /> 100% Genuine Handcrafted Ethnic Couture
           </span>
           <button
             onClick={onClose}

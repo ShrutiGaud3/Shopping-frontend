@@ -34,7 +34,7 @@ export const NewArrivalsSection: React.FC = () => {
             NEW ARRIVALS
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-2 max-w-lg tracking-wide">
-            Explore the latest festive silhouettes &amp; bridal drops straight from master Surat artisans
+            Explore the latest festive silhouettes &amp; bridal drops straight from master artisans
           </p>
 
           {/* Category Filter Tabs */}

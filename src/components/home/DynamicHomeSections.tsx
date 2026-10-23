@@ -169,7 +169,7 @@ export const DynamicHomeSections: React.FC = () => {
                       <img
                         src={cat.image}
                         alt={`${cat.tag || ''} ${cat.title}`}
-                        className="w-full h-full object-cover object-center transition-transform duration-700 ease-out group-hover:scale-108"
+                        className="w-full h-full object-cover object-top transition-transform duration-700 ease-out group-hover:scale-108"
                         loading="lazy"
                       />
 
@@ -405,7 +405,7 @@ export const DynamicHomeSections: React.FC = () => {
                 <img
                   src={bgImg}
                   alt={sec.title}
-                  className="w-full h-full object-cover object-center scale-100 hover:scale-102 transition-transform duration-1000 ease-out"
+                  className="w-full h-full object-cover object-top scale-100 hover:scale-102 transition-transform duration-1000 ease-out"
                   loading="lazy"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/60 to-black/30 sm:bg-gradient-to-r sm:from-black/25 sm:via-black/65 sm:to-black/95" />
