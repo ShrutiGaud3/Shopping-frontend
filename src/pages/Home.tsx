@@ -4,7 +4,6 @@ import { PromoStrip } from '../components/home/PromoStrip';
 import { DynamicHomeSections } from '../components/home/DynamicHomeSections';
 import { TrustBadges } from '../components/home/TrustBadges';
 import { CustomerReviews } from '../components/home/CustomerReviews';
-import { Newsletter } from '../components/home/Newsletter';
 
 export const Home: React.FC = () => {
   return (
@@ -23,9 +22,6 @@ export const Home: React.FC = () => {
 
       {/* 5. Verified Customer Reviews */}
       <CustomerReviews />
-
-      {/* 6. VIP Newsletter & Exclusive Drops */}
-      <Newsletter />
     </main>
   );
 };

@@ -35,14 +35,14 @@ export const StoryCircles: React.FC = () => {
       slug: 'sarees'
     },
     {
-      name: 'Lehengas',
-      image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=400&q=80',
-      slug: 'lehengas'
-    },
-    {
       name: 'Salwar Suits',
       image: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?auto=format&fit=crop&w=400&q=80',
       slug: 'salwar-suits'
+    },
+    {
+      name: 'Lehengas',
+      image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=400&q=80',
+      slug: 'lehengas'
     }
   ];
 
@@ -50,8 +50,8 @@ export const StoryCircles: React.FC = () => {
     return (
       <section className="bg-white py-6 border-b border-slate-100 overflow-hidden">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-5 sm:gap-8 overflow-x-auto pb-2 scrollbar-none justify-start md:justify-center animate-pulse">
-            {[1, 2, 3, 4, 5, 6].map((i) => (
+          <div className="flex items-center gap-5 sm:gap-8 overflow-x-auto pb-2 scrollbar-none justify-center animate-pulse">
+            {[1, 2, 3].map((i) => (
               <div key={i} className="flex flex-col items-center gap-2 shrink-0">
                 <div className="w-18 h-18 sm:w-20 sm:h-20 rounded-full bg-slate-200" />
                 <div className="h-3 w-14 bg-slate-200 rounded" />
@@ -63,12 +63,27 @@ export const StoryCircles: React.FC = () => {
     );
   }
 
-  const items = categories.length > 0 ? categories : (defaultStories as any[]);
+  const rawItems = categories.length > 0 ? categories : (defaultStories as any[]);
+
+  const getRank = (name: string, slug?: string) => {
+    const text = `${name || ''} ${slug || ''}`.toLowerCase();
+    if (text.includes('saree')) return 1;
+    if (text.includes('suit') || text.includes('salwar')) return 2;
+    if (text.includes('lehenga')) return 3;
+    return 10;
+  };
+
+  const items = [...rawItems].sort((a, b) => {
+    const rA = getRank(a.name, a.slug);
+    const rB = getRank(b.name, b.slug);
+    if (rA !== rB) return rA - rB;
+    return (a.order || 0) - (b.order || 0);
+  });
 
   return (
     <section className="bg-white py-6 border-b border-slate-100 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-5 sm:gap-8 overflow-x-auto pb-2 scrollbar-none justify-start md:justify-center">
+        <div className="flex items-center gap-5 sm:gap-8 overflow-x-auto pb-2 scrollbar-none justify-center">
           {items.map((cat, idx) => (
             <Link
               key={cat.id || cat.slug || idx}

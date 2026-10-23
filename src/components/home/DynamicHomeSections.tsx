@@ -490,13 +490,13 @@ export const DynamicHomeSections: React.FC = () => {
           return (
             <div key={sec._id || sec.id}>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-2">
-                <div className="text-center md:text-left">
+                <div className="text-center">
                   <h2 className="font-serif text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
                     {sec.title}
                   </h2>
                   {sec.subtitle && (
                     <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
-                      {sec.subtitle}
+                      {sec.subtitle.replace(/Surat\s*/gi, '')}
                     </p>
                   )}
                 </div>

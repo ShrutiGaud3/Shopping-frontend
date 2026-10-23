@@ -597,7 +597,10 @@ export const ProductDetails: React.FC = () => {
                     <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
                       <div className="flex items-center gap-2.5 sm:gap-3 flex-1">
                         <button
-                          onClick={() => addToCart(product, selectedSize, selectedColor, 1, selectedStitchOption || undefined)}
+                          onClick={() => {
+                            addToCart(product, selectedSize, selectedColor, 1, selectedStitchOption || undefined);
+                            navigate('/cart');
+                          }}
                           className="flex-1 bg-gray-900 text-white font-bold text-xs sm:text-sm py-3.5 px-3 sm:px-4 uppercase tracking-wider flex items-center justify-center gap-2 hover:bg-black transition-all shadow-md rounded-sm cursor-pointer whitespace-nowrap"
                         >
                           <ShoppingBag className="w-4 h-4 shrink-0" /> Add to Cart

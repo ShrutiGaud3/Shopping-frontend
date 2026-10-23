@@ -80,7 +80,7 @@ export const CustomerReviews: React.FC = () => {
     : DEFAULT_REVIEWS;
 
   return (
-    <section className="py-16 md:py-24 bg-gray-50/70 border-b border-gray-100 text-left">
+    <section className="py-16 md:py-24 bg-gray-50/70 text-left">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Title & Nav Controls */}

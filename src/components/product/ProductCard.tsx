@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Heart, ShoppingBag, AlertCircle } from 'lucide-react';
 import type { Product } from '../../types';
 import { useShop } from '../../context/ShopContext';
@@ -11,6 +11,7 @@ interface ProductCardProps {
 
 export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
   const { toggleWishlist, isInWishlist, addToCart } = useShop();
+  const navigate = useNavigate();
   const isSaved = isInWishlist(product.id);
   const isOutOfStock = product.stock === 0;
 
@@ -69,6 +70,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                 e.preventDefault();
                 e.stopPropagation();
                 addToCart(product);
+                navigate('/cart');
               }}
               className="w-full bg-[#183812] text-white hover:bg-[#0E250A] font-bold text-xs py-2.5 px-4 uppercase tracking-wider flex items-center justify-center gap-2 transition-all shadow-md hover:shadow-xl cursor-pointer rounded-xs active:scale-95"
             >
@@ -133,6 +135,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
                   e.preventDefault();
                   e.stopPropagation();
                   addToCart(product);
+                  navigate('/cart');
                 }}
                 className="w-full bg-[#183812] text-white active:bg-[#0E250A] font-bold text-[11px] py-2 px-2 uppercase tracking-wider rounded-xs flex items-center justify-center gap-1.5 shadow-xs transition-colors cursor-pointer"
               >
