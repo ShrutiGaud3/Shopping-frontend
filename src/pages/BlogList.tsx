@@ -290,7 +290,7 @@ export const BlogList: React.FC = () => {
               Connect directly with our master Surat weavers and fashion stylists on WhatsApp for instant video consultation, loom swatches, and custom stitching queries.
             </p>
             <button
-              onClick={() => openWhatsAppSupport('Hello VELORA Stylist Team! 👋 I am reading your style stories and would love guidance on choosing the right ethnic fabric and fit.')}
+              onClick={() => openWhatsAppSupport('Hello Weavera Stylist Team! 👋 I am reading your style stories and would love guidance on choosing the right ethnic fabric and fit.')}
               className="bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-lg transition-all shadow-md cursor-pointer inline-flex items-center gap-2"
             >
               <MessageCircle className="w-4 h-4 fill-emerald-950 text-emerald-400" />

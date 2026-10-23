@@ -102,7 +102,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
   const openWhatsAppSupport = (customMsg?: string) => {
     const rawNumber = settings.whatsapp?.number || '919876543210';
     const cleanNumber = rawNumber.replace(/[^0-9]/g, '');
-    const message = customMsg || settings.whatsapp?.defaultMessage || 'Hello VELORA Support! 👋 I need assistance.';
+    const message = customMsg || settings.whatsapp?.defaultMessage || 'Hello Weavera Support! 👋 I need assistance.';
     const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
     openWhatsAppUrl(url);
   };
@@ -111,7 +111,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     const rawNumber = settings.whatsapp?.number || '919876543210';
     const cleanNumber = rawNumber.replace(/[^0-9]/g, '');
     const productUrl = window.location.href;
-    const message = `Hello VELORA! 👋\n\nI would like to order this item directly via WhatsApp:\n\n🛍️ *Product:* ${product.name}\n🏷️ *Brand:* ${product.brand}\n💰 *Price:* ₹${product.price.toLocaleString()}\n📏 *Size:* ${selectedSize}\n🎨 *Color:* ${selectedColor}\n🔗 *Link:* ${productUrl}\n\nPlease confirm availability and payment details. Thank you!`;
+    const message = `Hello Weavera! 👋\n\nI would like to order this item directly via WhatsApp:\n\n🛍️ *Product:* ${product.name}\n🏷️ *Brand:* ${product.brand}\n💰 *Price:* ₹${product.price.toLocaleString()}\n📏 *Size:* ${selectedSize}\n🎨 *Color:* ${selectedColor}\n🔗 *Link:* ${productUrl}\n\nPlease confirm availability and payment details. Thank you!`;
     const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
     openWhatsAppUrl(url);
   };
@@ -126,7 +126,7 @@ export const SettingsProvider: React.FC<{ children: React.ReactNode }> = ({ chil
       itemsList += `${index + 1}. *${pName}* (Qty: ${item.quantity}, Size: ${item.selectedSize}, Color: ${item.selectedColor}) - ₹${(pPrice * item.quantity).toLocaleString()}\n`;
     });
 
-    const message = `Hello VELORA Express Support! 🛍️\n\nI would like to place an order for my Shopping Bag items:\n\n${itemsList}\n💳 *Total Order Amount:* ₹${totalAmount.toLocaleString()}\n\nPlease verify my cart items and share payment instructions!`;
+    const message = `Hello Weavera Express Support! 🛍️\n\nI would like to place an order for my Shopping Bag items:\n\n${itemsList}\n💳 *Total Order Amount:* ₹${totalAmount.toLocaleString()}\n\nPlease verify my cart items and share payment instructions!`;
     const url = `https://wa.me/${cleanNumber}?text=${encodeURIComponent(message)}`;
     openWhatsAppUrl(url);
   };

@@ -25,8 +25,8 @@ export const adaptBackendOrder = (item: any): Order => {
         product: {
           id: prodId,
           name: prodName,
-          brand: prodObj?.brand || 'Velora Studio',
-          category: prodObj?.category || 'Clothing',
+          brand: prodObj?.brand || 'Weavera Heritage',
+          category: prodObj?.category || 'Sarees',
           price: i.price !== undefined ? i.price : (prodObj?.price || 1299),
           originalPrice: prodObj?.originalPrice || i.price || 1999,
           discountPercent: prodObj?.discountPercent || 0,

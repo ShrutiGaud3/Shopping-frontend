@@ -34,8 +34,8 @@ export const Login: React.FC = () => {
       <div className="max-w-md w-full bg-white p-8 border border-gray-200 rounded-sm shadow-xs text-left">
         
         <div className="text-center mb-8">
-          <span className="font-serif text-3xl font-bold tracking-widest text-gray-900 block mb-2">
-            VELORA
+          <span className="font-serif text-3xl font-bold tracking-widest text-[#183812] block mb-2">
+            WEAVERA
           </span>
           <h2 className="font-serif text-2xl font-bold text-gray-900">
             Welcome Back

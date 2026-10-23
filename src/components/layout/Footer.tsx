@@ -1,8 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Send, ChevronDown, MessageCircle, Phone, MapPin, Clock, Loader2 } from 'lucide-react';
 import { useShop } from '../../context/ShopContext';
 import { useSettings } from '../../context/SettingsContext';
+import { pageService } from '../../services/pageService';
+import { categoryService } from '../../services/categoryService';
+import type { PageItem, Category } from '../../types';
 import API from '../../services/api';
 
 export const Footer: React.FC = () => {
@@ -13,6 +16,34 @@ export const Footer: React.FC = () => {
 
   // Accordion toggle state for mobile footers
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({});
+  const [dbPages, setDbPages] = useState<PageItem[]>([]);
+  const [dbCategories, setDbCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchFooterData = async () => {
+      try {
+        const [pagesRes, catsRes] = await Promise.all([
+          pageService.getPages(),
+          categoryService.getCategories()
+        ]);
+        if (isMounted) {
+          if (pagesRes.success && pagesRes.data && pagesRes.data.length > 0) {
+            setDbPages(pagesRes.data.filter((p) => p.isActive !== false));
+          }
+          if (catsRes.success && catsRes.data && catsRes.data.length > 0) {
+            setDbCategories(catsRes.data.filter((c: Category) => c.showInMenu !== false));
+          }
+        }
+      } catch (e) {
+        console.warn('Could not load footer dynamic data:', e);
+      }
+    };
+    fetchFooterData();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   const toggleSection = (key: string) => {
     setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
@@ -75,7 +106,7 @@ export const Footer: React.FC = () => {
         {/* Multi-Column Grid Layout */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 md:gap-8 mb-12 md:mb-16 text-xs text-[#284C1E]">
           
-          {/* Column 1: Ethnic Categories */}
+          {/* Column 1: Ethnic Categories (Dynamic from database) */}
           <div className="border-b md:border-b-0 border-[#A3C68C] pb-4 md:pb-0">
             <button
               onClick={() => toggleSection('ethnic')}
@@ -85,13 +116,28 @@ export const Footer: React.FC = () => {
               <ChevronDown className={`w-4 h-4 md:hidden text-[#284C1E] transition-transform duration-300 ${openSections['ethnic'] ? 'rotate-180 text-[#183812]' : ''}`} />
             </button>
             <ul className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['ethnic'] ? 'block' : 'hidden md:block'}`}>
-              <li><Link to="/products?category=Sarees" className="hover:text-[#0E250A] font-semibold transition-colors">Silk &amp; Designer Sarees</Link></li>
-              <li><Link to="/products?category=Lehengas" className="hover:text-[#0E250A] font-semibold transition-colors">Bridal &amp; Celebration Lehengas</Link></li>
-              <li><Link to="/products?category=Salwar%20Suits" className="hover:text-[#0E250A] font-semibold transition-colors">Festive &amp; Anarkali Salwar Suits</Link></li>
+              {dbCategories.length > 0 ? (
+                dbCategories.slice(0, 6).map((cat) => (
+                  <li key={cat.id || cat.slug}>
+                    <Link
+                      to={`/products?category=${encodeURIComponent(cat.name)}`}
+                      className="hover:text-[#0E250A] font-semibold transition-colors"
+                    >
+                      {cat.name}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li><Link to="/products?category=Sarees" className="hover:text-[#0E250A] font-semibold transition-colors">Silk &amp; Designer Sarees</Link></li>
+                  <li><Link to="/products?category=Lehengas" className="hover:text-[#0E250A] font-semibold transition-colors">Bridal &amp; Celebration Lehengas</Link></li>
+                  <li><Link to="/products?category=Salwar%20Suits" className="hover:text-[#0E250A] font-semibold transition-colors">Festive &amp; Anarkali Salwar Suits</Link></li>
+                </>
+              )}
             </ul>
           </div>
 
-          {/* Column 2: Customer Policies (Dynamic CMS Pages) */}
+          {/* Column 2: Customer Policies (Dynamic CMS Pages from database) */}
           <div className="border-b md:border-b-0 border-[#A3C68C] pb-4 md:pb-0">
             <button
               onClick={() => toggleSection('policies')}
@@ -101,11 +147,26 @@ export const Footer: React.FC = () => {
               <ChevronDown className={`w-4 h-4 md:hidden text-[#284C1E] transition-transform duration-300 ${openSections['policies'] ? 'rotate-180 text-[#183812]' : ''}`} />
             </button>
             <ul className={`space-y-2.5 pt-1 md:pt-0 font-medium ${openSections['policies'] ? 'block' : 'hidden md:block'}`}>
-              <li><Link to="/pages/about-us" className="hover:text-[#0E250A] font-semibold transition-colors">About Us</Link></li>
-              <li><Link to="/pages/shipping-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Shipping &amp; Delivery</Link></li>
-              <li><Link to="/pages/return-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Returns &amp; Exchange Policy</Link></li>
-              <li><Link to="/pages/terms-and-conditions" className="hover:text-[#0E250A] font-semibold transition-colors">Terms of Service</Link></li>
-              <li><Link to="/pages/privacy-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Privacy Policy</Link></li>
+              {dbPages.length > 0 ? (
+                dbPages.map((pg) => (
+                  <li key={pg.slug}>
+                    <Link
+                      to={`/pages/${pg.slug}`}
+                      className="hover:text-[#0E250A] font-semibold transition-colors"
+                    >
+                      {pg.title}
+                    </Link>
+                  </li>
+                ))
+              ) : (
+                <>
+                  <li><Link to="/pages/about-us" className="hover:text-[#0E250A] font-semibold transition-colors">About Us</Link></li>
+                  <li><Link to="/pages/shipping-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Shipping &amp; Delivery</Link></li>
+                  <li><Link to="/pages/refund-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Refund &amp; Exchange Policy</Link></li>
+                  <li><Link to="/pages/terms-and-conditions" className="hover:text-[#0E250A] font-semibold transition-colors">Terms of Service</Link></li>
+                  <li><Link to="/pages/privacy-policy" className="hover:text-[#0E250A] font-semibold transition-colors">Privacy Policy</Link></li>
+                </>
+              )}
               <li><Link to="/pages/faq" className="hover:text-[#0E250A] font-semibold transition-colors">Frequently Asked Questions (FAQ)</Link></li>
             </ul>
           </div>
@@ -241,13 +302,28 @@ export const Footer: React.FC = () => {
         {/* Footer Bottom Bar */}
         <div className="pt-8 border-t border-[#A3C68C] flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#284C1E] text-center md:text-left">
           <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 sm:gap-6 text-[#284C1E]">
-            <Link to="/pages/terms-and-conditions" className="hover:text-[#183812] font-semibold transition-colors">Terms &amp; Conditions</Link>
-            <Link to="/pages/privacy-policy" className="hover:text-[#183812] font-semibold transition-colors">Privacy Policy</Link>
-            <Link to="/pages/shipping-policy" className="hover:text-[#183812] font-semibold transition-colors">Shipping Policy</Link>
+            {dbPages.length > 0 ? (
+              dbPages.slice(0, 5).map((pg) => (
+                <Link
+                  key={pg.slug}
+                  to={`/pages/${pg.slug}`}
+                  className="hover:text-[#183812] font-semibold transition-colors"
+                >
+                  {pg.title}
+                </Link>
+              ))
+            ) : (
+              <>
+                <Link to="/pages/terms-and-conditions" className="hover:text-[#183812] font-semibold transition-colors">Terms &amp; Conditions</Link>
+                <Link to="/pages/privacy-policy" className="hover:text-[#183812] font-semibold transition-colors">Privacy Policy</Link>
+                <Link to="/pages/shipping-policy" className="hover:text-[#183812] font-semibold transition-colors">Shipping Policy</Link>
+                <Link to="/pages/refund-policy" className="hover:text-[#183812] font-semibold transition-colors">Refund &amp; Exchange Policy</Link>
+              </>
+            )}
             <Link to="/pages/faq" className="hover:text-[#183812] font-semibold transition-colors">FAQs</Link>
           </div>
 
-          <p className="text-[#2E5424] font-medium">{settings.branding?.footerText || '© 2026 Weavera Ethnic Fashion Inc. All rights reserved.'}</p>
+          <p className="text-[#2E5424] font-medium">{(settings as any)?.copyrightText || settings.branding?.footerText || '© 2026 Weavera Ethnic Fashion Inc. All rights reserved.'}</p>
         </div>
 
       </div>

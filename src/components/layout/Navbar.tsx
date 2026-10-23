@@ -113,27 +113,10 @@ export const Navbar: React.FC = () => {
     }
   ];
 
-  const ALLOWED_ROOT_SLUGS = ['sarees', 'lehengas', 'salwar-suits'];
-  const ALLOWED_ROOT_NAMES = ['sarees', 'lehengas', 'salwar suits'];
-
-  const filteredRoots = (categoryTree && categoryTree.length > 0)
-    ? categoryTree.filter((cat) => {
-        const slug = (cat.slug || '').toLowerCase().trim();
-        const name = (cat.name || '').toLowerCase().trim();
-        return ALLOWED_ROOT_SLUGS.includes(slug) || ALLOWED_ROOT_NAMES.includes(name);
-      })
-    : [];
-
-  const displayCategories: Category[] = (filteredRoots.length > 0 ? filteredRoots : (defaultCategories as Category[])).map((root) => {
-    const fallback = (defaultCategories as Category[]).find(
-      (d) => d.slug === root.slug || d.name?.toLowerCase() === root.name?.toLowerCase()
-    );
-    const children = (root.children && root.children.length > 0) ? root.children : (fallback?.children || []);
-    return {
-      ...root,
-      children
-    } as Category;
-  });
+  // Use dynamic categories directly from database (categoryTree)
+  const displayCategories: Category[] = (categoryTree && categoryTree.length > 0)
+    ? categoryTree
+    : (defaultCategories as Category[]);
 
   return (
     <>

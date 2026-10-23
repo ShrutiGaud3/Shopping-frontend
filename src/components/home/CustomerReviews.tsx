@@ -75,7 +75,7 @@ export const CustomerReviews: React.FC = () => {
         rating: r.rating || 5,
         date: r.date || 'Recent',
         comment: r.comment,
-        productName: r.productName || 'Velora Fashion Item'
+        productName: (typeof r.product === 'object' && (r.product as any)?.name) || r.productName || 'Weavera Pure Silk / Bridal Item'
       }))
     : DEFAULT_REVIEWS;
 

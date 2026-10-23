@@ -134,7 +134,7 @@ export const Orders: React.FC = () => {
                       const prodObj = item.product || item;
                       const prodImage = prodObj.image || (prodObj.images && prodObj.images[0]);
                       const prodName = prodObj.name || item.name;
-                      const prodBrand = prodObj.brand || 'Velora';
+                      const prodBrand = prodObj.brand || 'Weavera';
                       const itemSize = item.selectedSize || item.size || 'M';
                       const itemColor = item.selectedColor || item.color || 'Default';
 

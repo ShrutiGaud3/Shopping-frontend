@@ -59,7 +59,7 @@ export const BlogPostDetail: React.FC = () => {
 
   const handleShareWhatsApp = () => {
     if (!post) return;
-    const text = `Read this ethnic style story on VELORA: *${post.title}* - ${window.location.href}`;
+    const text = `Read this ethnic style story on Weavera: *${post.title}* - ${window.location.href}`;
     openWhatsApp(`https://wa.me/?text=${encodeURIComponent(text)}`);
   };
 
@@ -235,7 +235,7 @@ export const BlogPostDetail: React.FC = () => {
           </div>
 
           <button
-            onClick={() => openWhatsAppSupport(`Hello VELORA! 👋 I am reading your article '${post.title}' and would like styling recommendations or loom details.`)}
+            onClick={() => openWhatsAppSupport(`Hello Weavera! 👋 I am reading your article '${post.title}' and would like styling recommendations or loom details.`)}
             className="px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 shrink-0 cursor-pointer"
           >
             <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />

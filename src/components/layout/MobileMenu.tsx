@@ -265,7 +265,7 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categor
 
         {/* Drawer Footer */}
         <div className="p-4 border-t border-slate-100 bg-slate-50 text-[11px] text-slate-500">
-          <p>© 2026 VELORA Ethnic Fashion. All rights reserved.</p>
+          <p>© 2026 Weavera Ethnic Fashion. All rights reserved.</p>
         </div>
       </div>
     </div>

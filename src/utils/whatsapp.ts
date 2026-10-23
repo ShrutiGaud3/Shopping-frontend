@@ -19,7 +19,7 @@ export const getWhatsAppProductUrl = (
     ? `\n🧵 *Stitching Option:* ${stitchingOption.type} (+₹${stitchingOption.price})`
     : '';
 
-  const message = `Hello VELORA Store! 👋\n\nI would like to order this item directly via WhatsApp:\n\n🛍️ *Product:* ${product.name}\n🏷️ *Brand:* ${product.brand}\n💰 *Price:* ₹${itemPrice.toLocaleString()}${stitchingLine}\n📏 *Size:* ${selectedSize}\n🎨 *Color:* ${selectedColor}\n🔗 *Link:* ${productUrl}\n\nPlease confirm availability and payment details. Thank you!`;
+  const message = `Hello Weavera Store! 👋\n\nI would like to order this item directly via WhatsApp:\n\n🛍️ *Product:* ${product.name}\n🏷️ *Brand:* ${product.brand}\n💰 *Price:* ₹${itemPrice.toLocaleString()}${stitchingLine}\n📏 *Size:* ${selectedSize}\n🎨 *Color:* ${selectedColor}\n🔗 *Link:* ${productUrl}\n\nPlease confirm availability and payment details. Thank you!`;
 
   return `https://wa.me/${targetNumber}?text=${encodeURIComponent(message)}`;
 };
@@ -37,7 +37,7 @@ export const getWhatsAppCartUrl = (cartItems: CartItem[], totalAmount: number, c
     itemsList += `${index + 1}. *${pName}* (Qty: ${item.quantity}, Size: ${item.selectedSize}, Color: ${item.selectedColor}${stitchNote}) - ₹${(itemUnit * item.quantity).toLocaleString()}\n`;
   });
 
-  const message = `Hello VELORA Express Support! 🛍️\n\nI would like to place an order for my Shopping Bag items:\n\n${itemsList}\n💳 *Total Order Amount:* ₹${totalAmount.toLocaleString()}\n\nPlease verify my cart items and share order payment link!`;
+  const message = `Hello Weavera Express Support! 🛍️\n\nI would like to place an order for my Shopping Bag items:\n\n${itemsList}\n💳 *Total Order Amount:* ₹${totalAmount.toLocaleString()}\n\nPlease verify my cart items and share order payment link!`;
 
   return `https://wa.me/${targetNumber}?text=${encodeURIComponent(message)}`;
 };

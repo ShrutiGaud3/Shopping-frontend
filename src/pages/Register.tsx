@@ -46,14 +46,14 @@ export const Register: React.FC = () => {
       <div className="max-w-md w-full bg-white p-8 border border-gray-200 rounded-sm shadow-xs text-left">
         
         <div className="text-center mb-8">
-          <span className="font-serif text-3xl font-bold tracking-widest text-gray-900 block mb-2">
-            VELORA
+          <span className="font-serif text-3xl font-bold tracking-widest text-[#183812] block mb-2">
+            WEAVERA
           </span>
           <h2 className="font-serif text-2xl font-bold text-gray-900">
             Create Account
           </h2>
           <p className="text-xs text-gray-500 mt-1">
-            Join the VELORA fashion community for exclusive member benefits.
+            Join the Weavera ethnic fashion community for exclusive member benefits.
           </p>
         </div>
 

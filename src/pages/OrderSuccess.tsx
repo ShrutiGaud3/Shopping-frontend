@@ -64,7 +64,7 @@ export const OrderSuccess: React.FC = () => {
   };
 
   const whatsappPhone = settings?.whatsapp?.number || '919876543210';
-  const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(`Hello VELORA! 👋 I have a question regarding my order #${orderId || ''}.`)}`;
+  const whatsappUrl = `https://wa.me/${whatsappPhone}?text=${encodeURIComponent(`Hello Weavera! 👋 I have a question regarding my order #${orderId || ''}.`)}`;
 
   if (loading) {
     return (
@@ -91,7 +91,7 @@ export const OrderSuccess: React.FC = () => {
           </span>
 
           <h1 className="font-serif text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-            Thank You for Shopping with VELORA!
+            Thank You for Shopping with Weavera!
           </h1>
           <p className="text-xs text-gray-500 max-w-md mx-auto">
             Your ethnic wear order has been safely placed. We are preparing your handcrafted parcels with our signature festive packaging.

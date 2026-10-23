@@ -218,7 +218,7 @@ export const StaticPage: React.FC = () => {
               </p>
             </div>
             <button
-              onClick={() => openWhatsAppSupport('Hello VELORA! 👋 I have a question regarding store policies / products.')}
+              onClick={() => openWhatsAppSupport('Hello Weavera! 👋 I have a question regarding store policies / products.')}
               className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-bold px-5 py-3 rounded-full transition shadow-md shadow-emerald-600/20 shrink-0 cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" />

@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Mail, Phone, MapPin, Clock, Send, MessageSquare, ShieldCheck, ChevronDown, CheckCircle2, MessageCircle } from 'lucide-react';
 import { useShop } from '../context/ShopContext';
+import { useSettings } from '../context/SettingsContext';
 import { contactService } from '../services/contactService';
-import { WHATSAPP_NUMBER, openWhatsApp } from '../utils/whatsapp';
 
 export const ContactUs: React.FC = () => {
   const { showToast, user } = useShop();
@@ -64,9 +64,11 @@ export const ContactUs: React.FC = () => {
     }
   };
 
+  const { settings, openWhatsAppSupport } = useSettings();
+
   const handleWhatsAppClick = () => {
-    const text = `Hello VELORA Concierge! 👋\n\nI need help regarding: ${formData.topic || 'General Inquiry'}`;
-    openWhatsApp(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(text)}`);
+    const text = `Hello Weavera Concierge! 👋\n\nI need help regarding: ${formData.topic || 'General Inquiry'}`;
+    openWhatsAppSupport(text);
   };
 
   const FAQS = [
@@ -75,16 +77,16 @@ export const ContactUs: React.FC = () => {
       a: 'You can view real-time delivery status, courier tracking IDs, and delivery timelines directly under My Orders (/orders) page.'
     },
     {
-      q: 'What is VELORA’s return and exchange policy?',
-      a: 'We offer a 15-day hassle-free doorstep pick-up policy. Items must be unworn with original tags attached.'
+      q: 'What is Weavera’s return and exchange policy?',
+      a: 'We offer a 10-day hassle-free doorstep pick-up policy for exchange & refund. Items must be unworn with original tags attached.'
     },
     {
-      q: 'How do I choose the correct clothing size?',
-      a: 'Every product page features a 📐 Size Chart & Fit Guide modal with customizable unit measurement switches (Inches/CM) and recommended size selectors.'
+      q: 'How do I choose the correct clothing size or custom stitching?',
+      a: 'Every product page features sizing details, blouse piece options, and custom stitching notes. You can also chat with our master tailors on WhatsApp.'
     },
     {
       q: 'Which payment options are supported?',
-      a: 'We accept Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), and major Credit/Debit Cards.'
+      a: 'We accept Cash on Delivery (COD), UPI (Google Pay, PhonePe, Paytm), Net Banking, and major Credit/Debit Cards.'
     }
   ];
 
@@ -108,7 +110,7 @@ export const ContactUs: React.FC = () => {
             We are here to assist you.
           </h1>
           <p className="text-xs sm:text-sm text-gray-600 leading-relaxed">
-            Whether you need personal styling advice, order tracking support, or assistance with returns, our VELORA client care specialists are at your service.
+            Whether you need personal styling advice, order tracking support, or assistance with returns, our Weavera client care specialists are at your service.
           </p>
         </div>
 
@@ -125,11 +127,9 @@ export const ContactUs: React.FC = () => {
                   <MapPin className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-serif font-bold text-base text-gray-900">Flagship Atelier &amp; Office</h3>
+                  <h3 className="font-serif font-bold text-base text-gray-900">Flagship Loom &amp; Office</h3>
                   <p className="text-xs text-gray-600 leading-relaxed mt-1">
-                    VELORA Fashion Atelier<br />
-                    42 Fashion Boulevard, Suite 101<br />
-                    Mumbai, Maharashtra 400001, India
+                    {settings.support?.address || 'Ring Road Surat Fashion Hub, Surat, Gujarat - 395002, India'}
                   </p>
                 </div>
               </div>
@@ -137,23 +137,27 @@ export const ContactUs: React.FC = () => {
               <hr className="border-gray-100" />
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <a href="tel:+919876543210" className="flex items-center gap-3 group">
+                <a href={`tel:${settings.support?.phone || '+919876543210'}`} className="flex items-center gap-3 group">
                   <div className="p-2 rounded-xs bg-blue-50 text-blue-700 group-hover:bg-blue-600 group-hover:text-white transition-colors">
                     <Phone className="w-4 h-4" />
                   </div>
                   <div>
                     <span className="text-gray-400 block text-[10px] uppercase font-semibold">Phone Support</span>
-                    <span className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">+91 98765 43210</span>
+                    <span className="font-bold text-gray-900 group-hover:text-blue-600 transition-colors">
+                      {settings.support?.phone || '+91 98765 43210'}
+                    </span>
                   </div>
                 </a>
 
-                <a href="mailto:support@velora.com" className="flex items-center gap-3 group">
+                <a href={`mailto:${settings.support?.email || 'support@weavera.com'}`} className="flex items-center gap-3 group">
                   <div className="p-2 rounded-xs bg-emerald-50 text-emerald-700 group-hover:bg-emerald-600 group-hover:text-white transition-colors">
                     <Mail className="w-4 h-4" />
                   </div>
                   <div>
                     <span className="text-gray-400 block text-[10px] uppercase font-semibold">Email Support</span>
-                    <span className="font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">support@velora.com</span>
+                    <span className="font-bold text-gray-900 group-hover:text-emerald-600 transition-colors">
+                      {settings.support?.email || 'support@weavera.com'}
+                    </span>
                   </div>
                 </a>
               </div>
@@ -170,18 +174,18 @@ export const ContactUs: React.FC = () => {
 
               <div className="flex items-center gap-3 text-xs text-gray-600 pt-1">
                 <Clock className="w-4 h-4 text-gray-400 shrink-0" />
-                <span>Client Care Hours: <strong>Mon – Sat, 10:00 AM – 8:00 PM IST</strong></span>
+                <span>Client Care Hours: <strong>{settings.workingHours?.days || 'Mon – Sat'}, {settings.workingHours?.timing || '10:00 AM – 8:00 PM IST'}</strong></span>
               </div>
             </div>
 
             {/* Quick Promise Box */}
             <div className="bg-gray-900 text-white p-6 rounded-sm space-y-3 shadow-xs">
               <div className="flex items-center gap-2 text-amber-400 font-semibold text-xs uppercase tracking-wider">
-                <ShieldCheck className="w-4 h-4" /> VELORA Guarantee
+                <ShieldCheck className="w-4 h-4" /> Weavera Guarantee
               </div>
-              <h4 className="font-serif text-lg font-bold">100% Genuine Luxury &amp; Support</h4>
+              <h4 className="font-serif text-lg font-bold">100% Genuine Handcrafted Quality</h4>
               <p className="text-xs text-gray-300 leading-relaxed">
-                Our Dedicated Client Care Specialists ensure rapid 24-hour response times for all inquiries, exchange requests, and custom fittings.
+                Our Dedicated Client Care Specialists ensure rapid response times for all inquiries, exchange requests, and custom fittings direct from Surat.
               </p>
             </div>
 
