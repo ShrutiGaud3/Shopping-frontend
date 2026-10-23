@@ -278,22 +278,23 @@ export const BlogList: React.FC = () => {
         )}
 
         {/* WhatsApp Personal Stylist Banner */}
-        <div className="mt-14 bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 text-white rounded-2xl p-6 sm:p-10 shadow-lg relative overflow-hidden text-left">
+        <div className="mt-14 bg-gradient-to-r from-[#183812] via-[#244C1E] to-[#0E250A] text-white rounded-2xl p-6 sm:p-10 shadow-xl relative overflow-hidden text-left border border-[#2D5A23]/60">
+          <div className="absolute -right-16 -top-16 w-64 h-64 bg-[#BEDAA9]/10 rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 max-w-2xl">
-            <span className="bg-emerald-500/20 text-emerald-300 text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-3 border border-emerald-400/30">
+            <span className="bg-[#BEDAA9]/15 text-[#BEDAA9] text-[11px] font-bold px-3 py-1 rounded-full uppercase tracking-wider inline-block mb-3 border border-[#BEDAA9]/30">
               Personal Fashion Advisory
             </span>
-            <h3 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight mb-2">
+            <h3 className="font-serif text-2xl sm:text-3xl font-bold tracking-tight mb-2 text-white">
               Need personalized sizing or bridal fabric advice?
             </h3>
-            <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed mb-6">
+            <p className="text-xs sm:text-sm text-[#E2EFD9]/90 leading-relaxed mb-6 font-normal">
               Connect directly with our master weavers and fashion stylists on WhatsApp for instant video consultation, loom swatches, and custom stitching queries.
             </p>
             <button
               onClick={() => openWhatsAppSupport('Hello Weavera Stylist Team! 👋 I am reading your style stories and would love guidance on choosing the right ethnic fabric and fit.')}
-              className="bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-bold text-xs sm:text-sm px-6 py-3.5 rounded-lg transition-all shadow-md cursor-pointer inline-flex items-center gap-2"
+              className="bg-[#BEDAA9] hover:bg-white text-[#183812] font-bold text-xs sm:text-sm px-6 py-3.5 rounded-full transition-all shadow-md hover:shadow-xl cursor-pointer inline-flex items-center gap-2.5 active:scale-95"
             >
-              <MessageCircle className="w-4 h-4 fill-emerald-950 text-emerald-400" />
+              <MessageCircle className="w-4 h-4 fill-[#183812] text-[#BEDAA9]" />
               Chat with a Weavera Stylist on WhatsApp
             </button>
           </div>

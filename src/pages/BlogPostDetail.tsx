@@ -221,24 +221,24 @@ export const BlogPostDetail: React.FC = () => {
         )}
 
         {/* WhatsApp Personal Stylist Card */}
-        <div className="mt-10 bg-gradient-to-r from-emerald-50 via-teal-50 to-purple-50 border border-emerald-200 rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-xs">
+        <div className="mt-10 bg-gradient-to-r from-[#183812]/5 via-[#244C1E]/10 to-[#BEDAA9]/20 border border-[#BEDAA9] rounded-2xl p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6 shadow-xs">
           <div>
-            <div className="flex items-center gap-2 text-emerald-800 font-bold text-xs uppercase tracking-wider mb-1">
-              <Sparkles className="w-4 h-4 text-emerald-600" /> Inspired by this craft?
+            <div className="flex items-center gap-2 text-[#183812] font-bold text-xs uppercase tracking-wider mb-1">
+              <Sparkles className="w-4 h-4 text-[#284C1E]" /> Inspired by this craft?
             </div>
-            <h3 className="font-serif text-xl sm:text-2xl font-bold text-gray-900">
+            <h3 className="font-serif text-xl sm:text-2xl font-bold text-[#183812]">
               Speak with a Weavera Ethnic Stylist
             </h3>
-            <p className="text-xs sm:text-sm text-gray-600 mt-1 max-w-lg">
+            <p className="text-xs sm:text-sm text-gray-700 mt-1 max-w-lg">
               Have questions about fabric weight, blouse unstitched allowance, or matching jewelry? Our in-house stylists are available on WhatsApp for complimentary video styling.
             </p>
           </div>
 
           <button
             onClick={() => openWhatsAppSupport(`Hello Weavera! 👋 I am reading your article '${post.title}' and would like styling recommendations or loom details.`)}
-            className="px-5 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 shrink-0 cursor-pointer"
+            className="px-5 py-3.5 bg-[#183812] hover:bg-[#0E250A] text-white font-bold text-xs rounded-xl transition-all shadow-sm flex items-center justify-center gap-2 shrink-0 cursor-pointer active:scale-95"
           >
-            <MessageCircle className="w-4 h-4 fill-white text-emerald-600" />
+            <MessageCircle className="w-4 h-4 fill-white text-[#BEDAA9]" />
             Enquire on WhatsApp
           </button>
         </div>
