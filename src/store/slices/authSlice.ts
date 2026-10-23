@@ -10,8 +10,16 @@ interface AuthState {
   error: string | null;
 }
 
-const initialToken = localStorage.getItem('velora_token') || null;
-const initialUser = localStorage.getItem('velora_user') ? JSON.parse(localStorage.getItem('velora_user')!) : null;
+let initialToken = localStorage.getItem('velora_token') || null;
+let initialUser = localStorage.getItem('velora_user') ? JSON.parse(localStorage.getItem('velora_user')!) : null;
+
+// Disallow admin credentials from ever being used in the storefront
+if (initialUser && initialUser.role === 'admin') {
+  localStorage.removeItem('velora_token');
+  localStorage.removeItem('velora_user');
+  initialToken = null;
+  initialUser = null;
+}
 
 const initialState: AuthState = {
   user: initialUser,
@@ -43,6 +51,9 @@ export const loginThunk = createAsyncThunk(
     try {
       const data = await authService.login(email, password);
       if (data.success && data.token && data.user) {
+        if (data.user.role === 'admin') {
+          return rejectWithValue('Admin accounts cannot sign in on the storefront. Please use the dedicated Admin Portal.');
+        }
         localStorage.setItem('velora_token', data.token);
         localStorage.setItem('velora_user', JSON.stringify(data.user));
         return data;
@@ -60,6 +71,11 @@ export const getMeThunk = createAsyncThunk(
     try {
       const data = await authService.getMe();
       if (data.success && data.user) {
+        if (data.user.role === 'admin') {
+          localStorage.removeItem('velora_token');
+          localStorage.removeItem('velora_user');
+          return rejectWithValue('Admin accounts cannot sign in on the storefront.');
+        }
         localStorage.setItem('velora_user', JSON.stringify(data.user));
         return data.user;
       }

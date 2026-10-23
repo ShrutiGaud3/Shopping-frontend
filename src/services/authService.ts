@@ -15,9 +15,9 @@ export const authService = {
     return response.data;
   },
 
-  // Login customer / admin
+  // Login customer (storefront)
   login: async (email: string, password: string): Promise<AuthResponse> => {
-    const response = await API.post('/auth/login', { email, password });
+    const response = await API.post('/auth/login', { email, password, portal: 'customer' });
     return response.data;
   },
 

@@ -5,7 +5,6 @@ import {
   Heart,
   ShoppingBag,
   User,
-  Shield,
   ChevronRight,
   ChevronDown,
   MessageCircle,
@@ -252,13 +251,6 @@ export const MobileMenu: React.FC<MobileMenuProps> = ({ isOpen, onClose, categor
               className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold text-emerald-700 hover:bg-emerald-50 rounded-lg"
             >
               <MessageCircle className="w-4 h-4" /> Order on WhatsApp
-            </button>
-
-            <button
-              onClick={() => handleNavClick('/admin')}
-              className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-semibold text-slate-600 hover:bg-slate-100 rounded-lg"
-            >
-              <Shield className="w-4 h-4 text-slate-500" /> Admin Portal
             </button>
           </div>
         </div>

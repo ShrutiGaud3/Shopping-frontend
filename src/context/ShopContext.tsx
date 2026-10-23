@@ -237,14 +237,10 @@ export const ShopProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   // Auto load cart, wishlist & orders on user login
   useEffect(() => {
-    if (user && token) {
+    if (user && token && user.role !== 'admin') {
       dispatch(fetchCartThunk());
       dispatch(fetchWishlistThunk());
-      if (user.role === 'admin') {
-        dispatch(fetchAllOrdersAdminThunk());
-      } else {
-        dispatch(fetchMyOrdersThunk());
-      }
+      dispatch(fetchMyOrdersThunk());
     }
   }, [dispatch, user, token]);
 

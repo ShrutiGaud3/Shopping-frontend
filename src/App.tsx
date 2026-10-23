@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { ShopProvider } from './context/ShopContext';
 import { AnnouncementBar } from './components/layout/AnnouncementBar';
 import { Navbar } from './components/layout/Navbar';
@@ -26,15 +26,6 @@ import { BlogPostDetail } from './pages/BlogPostDetail';
 import { SettingsProvider } from './context/SettingsContext';
 
 
-import { AdminLayout } from './components/admin/AdminLayout';
-import { Dashboard as AdminDashboard } from './pages/admin/Dashboard';
-import { AdminProducts } from './pages/admin/AdminProducts';
-import { AdminOrders } from './pages/admin/AdminOrders';
-import { AdminInventory } from './pages/admin/AdminInventory';
-import { AdminCoupons } from './pages/admin/AdminCoupons';
-import { AdminReviews } from './pages/admin/AdminReviews';
-import { AdminUsers } from './pages/admin/AdminUsers';
-import { AdminContactMessages } from './pages/admin/AdminContactMessages';
 
 import { WhatsAppFloat } from './components/layout/WhatsAppFloat';
 
@@ -83,17 +74,9 @@ export function App() {
               <Route path="register" element={<Register />} />
             </Route>
 
-          {/* Admin Management Dashboard */}
-          <Route path="/admin" element={<AdminLayout />}>
-            <Route index element={<AdminDashboard />} />
-            <Route path="products" element={<AdminProducts />} />
-            <Route path="orders" element={<AdminOrders />} />
-            <Route path="inventory" element={<AdminInventory />} />
-            <Route path="users" element={<AdminUsers />} />
-            <Route path="coupons" element={<AdminCoupons />} />
-            <Route path="reviews" element={<AdminReviews />} />
-            <Route path="messages" element={<AdminContactMessages />} />
-          </Route>
+          {/* Admin routes redirect to home on storefront (Admin has separate web portal) */}
+          <Route path="/admin/*" element={<Navigate to="/" replace />} />
+          <Route path="/admin" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </SettingsProvider>

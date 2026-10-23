@@ -5,7 +5,6 @@ import {
   Heart,
   ShoppingBag,
   Menu,
-  Shield,
   LogOut,
   Package,
   User,
@@ -337,18 +336,6 @@ export const Navbar: React.FC = () => {
                         <Heart className="w-4 h-4 text-rose-500" /> Saved Wishlist
                       </Link>
                     </div>
-
-                    {user.role === 'admin' && (
-                      <div className="py-1">
-                        <Link
-                          to="/admin"
-                          onClick={() => setUserDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-3.5 py-2 text-emerald-700 font-semibold hover:bg-emerald-50 transition-colors text-left"
-                        >
-                          <Shield className="w-4 h-4" /> Admin Portal
-                        </Link>
-                      </div>
-                    )}
 
                     <div className="py-1">
                       <button

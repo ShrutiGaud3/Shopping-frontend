@@ -19,11 +19,7 @@ export const Login: React.FC = () => {
     setLoading(false);
 
     if (res.success) {
-      if (email === 'admin@velora.com') {
-        navigate('/admin');
-      } else {
-        navigate('/');
-      }
+      navigate('/');
     } else {
       setErrorMessage(res.message || 'Invalid email or password');
     }
@@ -43,24 +39,6 @@ export const Login: React.FC = () => {
           <p className="text-xs text-gray-500 mt-1">
             Sign in to access your wishlist, saved addresses, and order history.
           </p>
-        </div>
-
-        {/* Admin Quick Fill Helper */}
-        <div className="mb-6 bg-gray-50 p-3 border border-gray-200 rounded-sm text-xs text-gray-600 flex items-center justify-between gap-3">
-          <div>
-            <span className="font-bold text-gray-900 text-[11px] block">Admin Portal Access</span>
-            <span className="text-[10px] text-gray-500">Click to auto-fill admin login credentials</span>
-          </div>
-          <button
-            type="button"
-            onClick={() => {
-              setEmail('admin@velora.com');
-              setPassword('Admin@123');
-            }}
-            className="py-1.5 px-3 bg-gray-900 text-white rounded-xs text-[11px] font-semibold hover:bg-black transition-colors cursor-pointer shrink-0 shadow-xs"
-          >
-            Fill Admin Login
-          </button>
         </div>
 
         {errorMessage && (
