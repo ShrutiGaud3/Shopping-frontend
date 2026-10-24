@@ -113,11 +113,11 @@ export const DynamicHomeSections: React.FC = () => {
         if (sec.type === 'bestselling_categories') {
           const defaultBanners = [
             {
-              tag: 'WEIGHTLESS',
-              title: 'LEHENGAS',
-              link: '/products?category=Lehengas',
-              image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1000&q=80',
-              description: 'Swirling silhouettes with artisanal zardozi & can-can flair'
+              tag: 'STELLAR',
+              title: 'SAREES',
+              link: '/products?category=Sarees',
+              image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=80',
+              description: 'Royal Banarasi, Kanjivaram & Organza zari masterpieces'
             },
             {
               tag: 'CLASSIC',
@@ -127,18 +127,28 @@ export const DynamicHomeSections: React.FC = () => {
               description: 'Breezy anarkalis, festive shararas & straight cut elegance'
             },
             {
-              tag: 'STELLAR',
-              title: 'SAREES',
-              link: '/products?category=Sarees',
-              image: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?auto=format&fit=crop&w=1000&q=80',
-              description: 'Royal Banarasi, Kanjivaram & Organza zari masterpieces'
+              tag: 'WEIGHTLESS',
+              title: 'LEHENGAS',
+              link: '/products?category=Lehengas',
+              image: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?auto=format&fit=crop&w=1000&q=80',
+              description: 'Swirling silhouettes with artisanal zardozi & can-can flair'
             }
           ];
 
-          const banners =
+          const rawBanners =
             sec.config?.banners && sec.config.banners.length > 0
               ? sec.config.banners
               : defaultBanners;
+
+          const getCategoryRank = (b: { title?: string; link?: string; tag?: string }) => {
+            const t = `${b.title || ''} ${b.link || ''} ${b.tag || ''}`.toLowerCase();
+            if (t.includes('saree')) return 1;
+            if (t.includes('suit') || t.includes('salwar')) return 2;
+            if (t.includes('lehenga')) return 3;
+            return 10;
+          };
+
+          const banners = [...rawBanners].sort((a, b) => getCategoryRank(a) - getCategoryRank(b));
 
           return (
             <section

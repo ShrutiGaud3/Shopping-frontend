@@ -31,9 +31,11 @@ export const PromoStrip: React.FC = () => {
     { text: 'ORDER DIRECTLY ON WHATSAPP FOR INSTANT DISPATCH', icon: 'shield', link: '' }
   ];
 
-  const activeItems = (marquees && marquees.length > 0)
-    ? marquees.filter((m) => m.isActive !== false)
-    : defaultItems;
+  const activeItems = (
+    marquees && marquees.length > 0
+      ? marquees.filter((m) => m.isActive !== false)
+      : defaultItems
+  ).filter((m) => !/surat/i.test(m.text));
 
   // Duplicate items for seamless continuous looping marquee on all screens
   const marqueeList = [...activeItems, ...activeItems, ...activeItems, ...activeItems];
